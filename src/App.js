@@ -6,6 +6,7 @@ import FlashCard from './FlashCard';
 const prompt = 'אמא שלך זונה';
 const answers = [
   'your mother is a whore',
+  'your mother is a hoor',
   'you are a son of a bitch',
   'you\'re a son of a bitch',
 ];
