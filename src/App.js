@@ -3,7 +3,6 @@ import './App.css';
 
 import FlashCard from './FlashCard';
 
-const prompt = 'אמא שלך זונה';
 const answers = [
   'your mother is a whore',
   'your mother is a hoor',
@@ -12,14 +11,21 @@ const answers = [
 ];
 
 class App extends Component {
+
+  state = {
+    currentPrompt: 'עישון שווה לעבדות',
+  }
+  
   render() {
+    const { currentPrompt } = this.state;
+    
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">Learn Hebrew you Asshat</h1>
+      <div className='App'>
+        <header className='App-header'>
+          <h1 className='App-title'>Learn Hebrew!</h1>
         </header>
         <div>
-          <FlashCard prompt={prompt} answers={answers}/>
+          <FlashCard prompt={currentPrompt} answers={answers}/>
         </div>
       </div>
     );

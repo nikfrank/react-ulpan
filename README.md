@@ -11,16 +11,22 @@ hebrew language shouldn't be a prison!
 
 Agenda:
 
-- architecture review: how will we organize our app for future development
-  - replaceable Components (standardizing props interface) ((this needs images))
-  - props interface for the FlashCard
-  - Application Level Components
+- Section 0: concepts and introduction
+  - architecture review: how will we organize our app for future development
+    - replaceable Components (standardizing props interface) ((this needs images))
+    - props interface for the FlashCard
+    - Application Level Components
   - Server architecture
-  - API design
+    - Database schema design
+    - API design
 
-- section 1: front end FlashCard Application
+- Section 1: front end FlashCard Application
   - step0: building and styling a FlashCard Component
-    - using stub data for the Exercise Component
+    - using stub data for the FlashCard Component
+    - styling the FlashCard
+      - linear gradients
+      - using a pseudo element to make the red left side line
+    - checking the answer
   - step1: rendering repeated exercises from a Dealer Component
     - using stub data for multiple exercises
     - mocking onResult network behaviour
@@ -29,7 +35,7 @@ Agenda:
   - step3: build a view level component to CREATE / EDIT exercises
   - step4: build a view level component to READ && render results
 
-- section 2: Server for saving exercises and results
+- Section 2: Server for saving exercises and results
   - step0: booting an express server
   - step1: defining API routes and their handlers
     - responding with stub data
@@ -39,7 +45,7 @@ Agenda:
     - saving data from POST requests
     - updating data with PUT or PATCH requests
 
-- section 3: user login and identity
+- Section 3: user login and identity
   - step0: making a facebook app id
   - step1: integrating facebook login to our app
   - step2: using our facebook identity for CREATE and READ requests
@@ -48,10 +54,12 @@ Agenda:
   - step3: querying exercise groups (lessons) by user
   - step4: full integration of front end and server
 
-- section 4: deploying a full stack app on heroku with postgres
+- Section 4: deploying a full stack app on heroku with postgres
   - bonus discussion of deployment on AWS / azure cloud runtimes
 
 
+
+## Section 0: concepts and introduction
 
 ### architecture review: how will we organize our app for future development
 
@@ -177,7 +185,9 @@ Lastly in this front end application, we will write a View Component for creatin
 
 ---
 
-#### Server architecture
+### Server architecture
+
+#### Database schema design
 
 Our server we will write is node express + sequelizer ORM with postgres
 
@@ -246,6 +256,297 @@ The goal is to make our API calls as standard CRUD = RESTful as we can. This wil
 
 
 ---
+
+
+## Section 1: front end FlashCard Application
+
+To get started, let's make a ```create-react-app``` boilerplate
+
+```
+$ cd ~/code
+$ create-react-app ulpan
+$ cd ulpan
+```
+
+and to start the dev-server
+
+```$ npm start```
+
+
+### step0: building and styling a FlashCard Component
+
+let's start with a boilerplate React Component
+
+```
+$ touch ./src/FlashCard.js
+$ touch ./src/FlashCard.css
+```
+
+./src/FlashCard.js
+```js
+import React, { Component } from 'react';
+
+import './FlashCard.css';
+
+class FlashCard extends Component {
+  state = {}
+
+  render(){
+    return (
+      <div>Coming Soon...</div>
+    );
+  }
+};
+
+export default FlashCard;
+```
+
+./src/App.js
+```js
+//...
+class App extends Component {
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <h1 className="App-title">Learn Hebrew!</h1>
+        </header>
+        <div>
+          <FlashCard />
+        </div>
+      </div>
+    );
+  }
+}
+//...
+```
+
+we're building just a basic FlashCard Component to start.
+
+We've already figured out how it'll fit into the app, so we don't have to worry about that any more (we just have to follow what we decided in Section 0 about the props)
+
+
+Let's build the basic prompt - answer flow in our FlashCard, assuming we'll get ```this.props.prompt```
+
+./src/FlashCard.js
+```js
+//...
+
+  state = {
+    guess: ''
+  }
+
+  setGuess = event=> this.setState({ guess: event.target.value })
+
+  check = ()=> console.log( this.props.prompt, this.state.guess )
+
+  render(){
+    const { prompt } = this.props;
+    const { guess } = this.state;
+    
+    return (
+      <div className='flashcard'>
+        <div>
+          {prompt}
+        </div>
+        <div className='prompt'>
+          <input value={guess} onChange={this.setGuess} />
+          <button onClick={this.check}>Check</button>
+        </div>
+      </div>
+    );
+  }
+
+//...
+```
+
+for now, we just have a placeholder for ```this.check``` which we can see the results on the console.
+
+one last thing before we can try this out - we need to pass a ```prompt``` prop from App to FlashCard
+
+#### using stub data for the FlashCard Component
+
+./src/App.js
+```js
+//...
+  state = {
+    currentPrompt: 'עישון שווה לעבדות',
+  }
+
+//...
+
+  render() {
+    const { currentPrompt } = this.state;
+    
+    return (
+      <div className='App'>
+        <header className='App-header'>
+          <h1 className='App-title'>Learn Hebrew!</h1>
+        </header>
+        <div>
+          <FlashCard prompt={currentPrompt} />
+        </div>
+      </div>
+    );
+  }
+//...
+```
+
+So we can run this in the browser (on [localhost:3000](http://localhost:3000)
+
+we should see the prompt rendered to the user and when we guess and check, we'll see the prompt and guess logged to the console.
+
+
+#### styling the FlashCard (to look like a real piece of paper)
+
+I want my FlashCard to look like
+
+<img src='http://res.publicdomainfiles.com/pdf_view/65/13920015614263.png' height=200 width=400/>
+
+So let's learn a bit about linear gradients and pseudo-elements
+
+##### linear gradients
+
+to make the lined background effect we want, the CSS function we'll google is the [linear-gradient](https://www.google.com/search?q=css+linear+gradient)
+
+which we'll use in a [background-image](https://www.w3schools.com/cssref/pr_background-image.asp)
+
+first we'll make a single line
+
+```css
+.flashcard {
+  background-image:
+    linear-gradient( to bottom, rgba(50, 200, 200, 0.5) 1px, transparent 1px);
+}
+```
+
+next we'll use the [background-size](https://www.w3schools.com/cssref/css3_pr_background-size.asp) to make the background repeat
+
+```css
+//...
+  background-size: 100px 30px;
+```
+the first number is the width of the tile to repeat (which doesn't matter here)
+
+the second number is the height (which will be the size of the gap - 1px)
+
+
+lastly, I want to offset the top line 25px (a bit less than a full gap)
+
+```css
+//...
+  background-position: 0 25px;
+```
+
+
+to finish up, let's limit the size of the card on the screen and make a border
+
+./src/FlashCard.css
+```css
+.flashcard {
+//...
+  min-height: 200px;
+  max-width: 80vw;
+  margin: 10px auto;
+
+  border: 1px solid rgba( 100, 100, 100, 0.25);
+//...
+}
+```
+
+#### using a pseudo element to make the red left side line
+
+Sometimes when styling an element, we want an extra element to put an icon in or add some color to our element. The CSS feature we'll use is the [::after pseudo element](https://developer.mozilla.org/en-US/docs/Web/CSS/::after)
+
+
+What we'll use this for here is to make a line for our left margin
+
+first we'll tell CSS to position our pseudo element relative to our .flashcard element
+
+./src/FlashCard.css
+```css
+.flashcard {
+  //...
+
+  position: relative;
+}
+
+.flashcard::after {
+  content: '';
+  position: absolute;
+}
+```
+
+and now our pseudo element exists and we can style it (in the browser's dev panel `elements`, it's possible to find the ::after element inside of our .flashcard div)
+
+./src/FlashCard.css
+```css
+
+.flashcard::after {
+  //...
+  left: 7%;
+  top: 0;
+  bottom: 0;
+  
+  border-left: 2px solid red;
+}
+```
+
+very nice! now all we have left to to make a function to check the answer!
+
+
+#### checking the answer
+
+let's fill in a simple function to check equality
+
+./src/FlashCard.js
+```js
+//...
+  state = {
+    //...
+    result: -1,
+  }
+  
+//...
+  check = ()=> {
+    if( this.state.guess === this.props.answer )
+      this.setState({ result: 1 });
+    else
+      this.setState({ result: 0 });
+  }
+//...
+```
+
+and render out the result
+
+```js
+//...
+  render(){
+    const { prompt } = this.props;
+    const { guess, result } = this.state;
+    
+    return (
+      <div className='flashcard'>
+        <div>
+          {prompt}
+        </div>
+        <div className='prompt'>
+          <input value={guess} onChange={this.setGuess} />
+          <button onClick={this.check}>Check</button>
+          {
+            result === 1 ? (
+              <div>success!</div>
+            ) : result > 0 ? (
+              <div>almost</div>
+            ) : result === 0 ? (
+              <div>hmm</div>
+            ) : null
+          }
+        </div>
+      </div>
+    );
+  }
+```
 
 
 

@@ -3,13 +3,7 @@ import levenshtein from 'fast-levenshtein';
 
 import './FlashCard.css';
 
-const borders = {
-  full: 'green',
-  half: 'orange',
-  none: 'red',
-};
-
-export default class FlashCard extends Component {
+class FlashCard extends Component {
 
   state = {
     guess: '',
@@ -25,13 +19,13 @@ export default class FlashCard extends Component {
       );
 
     const minResult = Math.min(...scores);
-    const result = !minResult ? 'full' :
-                   minResult < 0.4 ? 'half' :
-                   'none';
+    const result = !minResult ? 1 :
+                   minResult < 0.4 ? 0.5 :
+                   0;
 
     this.setState({ result });
   }
-  
+
   render(){
     const { prompt } = this.props;
     const { guess, result } = this.state;
@@ -41,12 +35,23 @@ export default class FlashCard extends Component {
         <div>
           {prompt}
         </div>
-        <div className='prompt'
-             style={{ border: '2px solid '+ borders[result] }}>
+        <div className='prompt'>
           <input value={guess} onChange={this.setGuess} />
           <button onClick={this.check}>Check</button>
+          {
+            result === 1 ? (
+              <div>success!</div>
+            ) : result > 0 ? (
+              <div>almost</div>
+            ) : result === 0 ? (
+              <div>hmm</div>
+            ) : null
+          }
         </div>
       </div>
     );
   }
 };
+
+
+export default FlashCard;
