@@ -612,6 +612,23 @@ export default Dealer;
 ```
 
 
+Let's refactor ```App renders FlashCard``` to ```App renders Dealer renders FlashCard```
+
+
+./src/App.js
+```js
+
+```
+
+./src/Dealer.js
+```js
+
+```
+
+./src/FlashCard.js --> no change!
+
+
+At first here we're using the simple "props drilling" technique, where we pass props down from the top level until they get used
 
 
 
