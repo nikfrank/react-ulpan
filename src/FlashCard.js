@@ -14,7 +14,7 @@ class FlashCard extends Component {
 
   check = ()=> {
     const scores =
-      this.props.answers.map( answer =>
+      this.props.answer.map( answer =>
         levenshtein.get(this.state.guess, answer) / (answer.length + 1)
       );
 

@@ -29,6 +29,7 @@ Agenda:
     - checking the answer
   - step1: rendering repeated exercises from a Dealer Component
     - using stub data for multiple exercises
+    - using a callback prop to trigger advancement
     - mocking onResult network behaviour
   - step2: build an view level component to load exercsises and save results
     - mocking our entire api in a well organized network layer
@@ -547,6 +548,70 @@ and render out the result
     );
   }
 ```
+
+one last thing - we need to pass the ```answer``` prop in from the app level
+
+./src/App.js
+```js
+//...
+  state = {
+    currentPrompt: 'עישון שווה לעבדות',
+    currentAnswer: [
+      'smoking is slavery',
+      'smoking equals slavery',
+    ],
+  }
+
+//...
+
+  render() {
+    const { currentPrompt, currentAnswer } = this.state;
+
+
+//...
+          <FlashCard prompt={currentPrompt} answer={currentAnswer}/>
+
+//...
+```
+
+
+
+later, we'll program in a callback prop ```onResult``` for our FlashCard so that every time a result occurs, we can move to the next prompt and trigger the correct network behaviour (CREATE result)
+
+for now this will do.
+
+
+
+### step1: rendering repeated exercises from a Dealer Component
+
+let's make a boilerplate for our Dealer app
+
+```
+$ touch ./src/Dealer.js
+$ touch ./src/Dealer.css
+```
+
+./src/Dealer.js
+```js
+import React, { Component } from 'react';
+import './Dealer.css';
+
+class Dealer extends Component {
+  state = {}
+
+  render(){
+    return (
+      <div>
+        Coming Soon...
+      </div>
+    );
+  }
+}
+
+export default Dealer;
+```
+
+
 
 
 
