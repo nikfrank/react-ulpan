@@ -29,9 +29,10 @@ Agenda:
     - checking the answer
   - step1: rendering repeated exercises from a Dealer Component
     - using stub data for multiple exercises
-    - using a callback prop to trigger advancement
-    - mocking onResult network behaviour
-  - step2: build an view level component to load exercsises and save results
+    - advancing through exercises
+    - onResult callbacks and mocking network behaviour
+  - step2: build an view level component to load exercises and save results
+    - installing react-router into our app, placeholder another view
     - mocking our entire api in a well organized network layer
   - step3: build a view level component to CREATE / EDIT exercises
   - step4: build a view level component to READ && render results
@@ -584,6 +585,60 @@ for now this will do.
 
 ### step1: rendering repeated exercises from a Dealer Component
 
+Our goal in this section is to cycle through a series of prompt-answer pairs each through our ```<FlashCard/>``` Component
+
+
+#### using stub data for multiple exercises
+
+So far, we have one example to test our Hebrew knowledge with. We'll need a few more for this step already
+
+./src/App.js
+```js
+//...
+
+class App extends Component {
+
+  state = {
+    exercises: [
+      {
+        prompt: 'עישון שווה לעבדות',
+        answer: [
+          'smoking is slavery',
+          'smoking equals slavery',
+        ],
+      },
+      {
+        prompt: 'מסים לא שונים לגניבה ',
+        answer: [
+          'taxes are no different than theft',
+          'tax is theft',
+        ],
+      },
+      {
+        prompt: 'לא אפשר לחנות בתל אביב',
+        answer: [
+          'you can not park in Tel Aviv',
+          'you can\'t park in Tel Aviv',
+          'it is impossible to park in Tel Aviv',
+          'it\'s impossible to park in Tel Aviv',
+          'there\'s no parking in Tel Aviv',
+        ],
+      },
+    ],
+  }
+//...
+```
+
+These are important things to know how to say.
+
+Next we'll build a ```<Dealer/>``` Component which can advance through these exercises
+
+The ```<Dealer/>``` will render the ```<FlashCard/>```, so our ```<App/>``` will render the ```<Dealer/>```
+
+
+
+#### advancing through exercises
+
 let's make a boilerplate for our Dealer app
 
 ```
@@ -612,23 +667,171 @@ export default Dealer;
 ```
 
 
-Let's refactor ```App renders FlashCard``` to ```App renders Dealer renders FlashCard```
+Let's refactor ```App renders FlashCard``` to ```App renders Dealer```
 
 
 ./src/App.js
 ```js
+//...
+import React, { Component } from 'react';
+import './App.css';
 
+import Dealer from './Dealer';
+
+class App extends Component {
+  //...
+
+  render() {
+    const { exercises } = this.state;
+    
+    return (
+      <div className='App'>
+        <header className='App-header'>
+          <h1 className='App-title'>Learn Hebrew!</h1>
+        </header>
+        <div>
+          <Dealer exercises={exercises}/>
+        </div>
+      </div>
+    );
+  }
 ```
+
+
+Now we can build ```<Dealer/>```
+
 
 ./src/Dealer.js
 ```js
+//...
+
+  state = {
+    exercises: this.props.exercises,
+    currentExercise: -1,
+  }
+
+  start = ()=> this.setState({ currentExercise: 0 })
+
+  render(){
+    const { currentExercise } = this.state;
+    
+    return (
+      <div>
+        {
+          currentExercise === -1 ? (
+            <button onClick={this.start}>
+              Start
+            </button>
+          ) : 'FLASHCARD PLACEHOLDER' 
+        }
+      </div>
+    );
+  }
+}
+
+export default Dealer;
+```
+
+on init, we save the ```this.props.exercises``` into state, and set the ```.currentExercise``` to -1 (which we'll use to mean we haven't started yet)
+
+We can run this and see that we can advance to the FLASHCARD PLACEHOLDER
+
+now we want to render the FlashCard with the first exercise passed to its props
+
+./src/Dealer.js
+```js
+//...
+
+import FlashCard from './FlashCard';
+
+//...
+
+  render(){
+    const { currentExercise } = this.state;
+    const { prompt, answer } = this.state.exercises[ currentExercise ] || {};
+    
+    return (
+      <div>
+        {
+          currentExercise === -1 ? (
+            <button onClick={this.start}>
+              Start
+            </button>
+          ) : (
+            <FlashCard prompt={prompt} answer={answer}/>
+          )
+        }
+      </div>
+    );
+  }
+  
+//...
+```
+
+very good! we haven't changed anything in the ```<FlashCard/>```, so as long as we send in the same props, it'll work just the same
+
+
+Let's build a ```this.next``` function for the ```<Dealer/>``` to advance to the next exercise
+
+./src/Dealer.js
+```js
+//...
+  next = ()=> this.setState(state => ({ currentExercise: state.currentExercise + 1 }) )
+
+// ... and a button to trigger it
+
+                  <button onClick={this.next}>Next</button>
+```
+
+now if we test our app, the next button advances the ```<FlashCard/>```, but it doesn't clear the input and result. The reason being we've updated the props being passed to the ```<FlashCard/>``` but the FlashCard doesn't clear the results as a results of it
+
+It is possible to solve this two different ways:
+- in ./src/FlashCard.js, we can respond to the props update by clearing the state
+- in ./src/Dealer.js, we can mount a new ```<FlashCard/>``` using a ```key```
+
+[React's docs on keys](https://reactjs.org/docs/lists-and-keys.html) explain that changing the ```key``` on a rendered Component will tell React to render a new copy of the Component
+
+In this instance my preferred solution is to use the ```key``` to trigger a new mount, as it is simpler, and avoids workaround logic inside ```FlashCard```
+
+
+./src/Dealer.js
+```js
+              <FlashCard prompt={prompt} answer={answer}
+                         key={currentExercise}/>
 
 ```
+
+by setting the ```key``` to ```currentExercise```, every time the next button is clicked, we'll get a new ```<FlashCard/>``` Component with a fresh ```state```.
+
+
+(In other scenarios where we want to maintain some part of ```state``` inside the child Component, we might use a [componentDidUpdate](https://reactjs.org/docs/react-component.html#componentdidupdate) or [getDerivedStateFromProps](https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops) lifecycle function instead of replacing the whole element by changing its ```key```)
+
+
+The last thing we'll need to do is collect results from our Components
+
+
+####  onResult callbacks and mocking network behaviour
+
+
+
 
 ./src/FlashCard.js --> no change!
 
 
 At first here we're using the simple "props drilling" technique, where we pass props down from the top level until they get used
+
+
+
+
+
+
+
+
+  - step2: build an view level component to load exercises and save results
+    - installing react-router into our app, placeholder another view
+    - mocking our entire api in a well organized network layer
+
+
 
 
 

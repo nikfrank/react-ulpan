@@ -7,19 +7,29 @@ class Dealer extends Component {
   state = {
     exercises: this.props.exercises,
     currentExercise: -1,
+    results: [],
   }
 
   start = ()=> this.setState({ currentExercise: 0 })
 
   next = ()=> this.setState(state => ({ currentExercise: state.currentExercise + 1 }) )
-    
+
+  finish = ()=> {
+    this.setState({ currentExercise: -1 });
+    this.props.onResult( this.state.results );
+  }
+  
+  onResult = (result)=> {
+    this.setState(state => ({ results: state.results.concat(result) }));
+  }
+  
   render(){
     const { currentExercise } = this.state;
     
     const cantStart = !this.props.exercises.length;
-    const cantNext = currentExercise >= this.props.exercises.length -1;
+    const last = currentExercise >= this.props.exercises.length -1;
 
-    const { prompt, answer } = this.props.exercises[ currentExercise ] || {};
+    const { prompt, answer } = this.state.exercises[ currentExercise ] || {};
     
     return (
       <div>
@@ -30,8 +40,16 @@ class Dealer extends Component {
             </button>
           ) : (
             <div>
-              <FlashCard prompt={prompt} answer={answer} key={currentExercise}/>
-              <button onClick={this.next} disabled={cantNext}>Next</button>
+              <FlashCard prompt={prompt} answer={answer}
+                         onResult={this.onResult}
+                         key={currentExercise}/>
+              {
+                last ? (
+                  <button onClick={this.finish}>Finish</button>
+                ) : (
+                  <button onClick={this.next}>Next</button>
+                )
+              }
             </div>
           )
         }

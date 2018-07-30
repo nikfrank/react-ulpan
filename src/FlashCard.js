@@ -24,6 +24,7 @@ class FlashCard extends Component {
                    0;
 
     this.setState({ result });
+    this.props.onResult({ score: result });
   }
 
   render(){

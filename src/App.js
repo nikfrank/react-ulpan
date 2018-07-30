@@ -33,6 +33,8 @@ class App extends Component {
       },
     ],
   }
+
+  onResult = results => console.log(results)
   
   render() {
     const { exercises } = this.state;
@@ -43,7 +45,7 @@ class App extends Component {
           <h1 className='App-title'>Learn Hebrew!</h1>
         </header>
         <div>
-          <Dealer exercises={exercises} />
+          <Dealer exercises={exercises} onResult={this.onResult}/>
         </div>
       </div>
     );
