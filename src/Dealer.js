@@ -19,14 +19,11 @@ class Dealer extends Component {
     this.props.onResult( this.state.results );
   }
   
-  onResult = (result)=> {
-    this.setState(state => ({ results: state.results.concat(result) }));
-  }
+  onResult = (result)=>
+    this.setState(state => ({ results: state.results.concat(result) }))
   
   render(){
-    const { currentExercise } = this.state;
-    
-    const cantStart = !this.props.exercises.length;
+    const { currentExercise } = this.state;    
     const last = currentExercise >= this.props.exercises.length -1;
 
     const { prompt, answer } = this.state.exercises[ currentExercise ] || {};
@@ -35,7 +32,7 @@ class Dealer extends Component {
       <div>
         {
           currentExercise === -1 ? (
-            <button onClick={this.start} disabled={cantStart}>
+            <button onClick={this.start}>
               Start
             </button>
           ) : (

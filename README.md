@@ -511,10 +511,8 @@ let's fill in a simple function to check equality
   
 //...
   check = ()=> {
-    if( this.state.guess === this.props.answer )
-      this.setState({ result: 1 });
-    else
-      this.setState({ result: 0 });
+    const score = ( this.state.guess === this.props.answer ) ? 1 : 0
+    this.setState({ result: score });
   }
 //...
 ```
@@ -780,7 +778,11 @@ Let's build a ```this.next``` function for the ```<Dealer/>``` to advance to the
 
 // ... and a button to trigger it
 
-                  <button onClick={this.next}>Next</button>
+        <button onClick={this.next}>Next</button>
+      </div>
+    );
+  }
+
 ```
 
 now if we test our app, the next button advances the ```<FlashCard/>```, but it doesn't clear the input and result. The reason being we've updated the props being passed to the ```<FlashCard/>``` but the FlashCard doesn't clear the results as a results of it
@@ -796,9 +798,10 @@ In this instance my preferred solution is to use the ```key``` to trigger a new 
 
 ./src/Dealer.js
 ```js
+//...
               <FlashCard prompt={prompt} answer={answer}
                          key={currentExercise}/>
-
+//...
 ```
 
 by setting the ```key``` to ```currentExercise```, every time the next button is clicked, we'll get a new ```<FlashCard/>``` Component with a fresh ```state```.
@@ -809,23 +812,122 @@ by setting the ```key``` to ```currentExercise```, every time the next button is
 
 The last thing we'll need to do is collect results from our Components
 
+(( could put an exercise here to animate the transition between prompts ))
+
 
 ####  onResult callbacks and mocking network behaviour
 
+Each time the user hits the check button in the FlashCard, the result of the check should be reported upward (to the parent Component, ie Dealer then App) so that the ```App``` can save the results.
+
+Later in the course, we'll actually send those results to the server to save. For now, we'll pretend to do the network behaviour at the ```App``` level - that way when the server is ready we'll be ready to integrate with the API.
 
 
+First thing's first: we need to send the result up from ```FlashCard```
 
-./src/FlashCard.js --> no change!
+./src/FlashCard.js
+```js
+//...
+  check = ()=> {
+    const score = ( this.state.guess === this.props.answer ) ? 1 : 0
+    this.setState({ result: score });
+    this.props.onResult({ result: score });
+  }
+  
+//...
+```
+
+this will break if we run it (```this.props.onResult``` isn't a function until we pass a function in the ```onResult``` prop to ```<FlashCard/>``` from ```<Dealer/>```)
+
+so let's make an onResult function in ```Dealer``` to collect results from the ```<FlashCard/>```s
+
+./src/Dealer.js
+```js
+//...
+  state = {
+    //...
+    results: [],
+  }
+
+  onResult = (result)=>
+    this.setState(state => ({ results: state.results.concat(result) }))
+
+//...
+              <FlashCard prompt={prompt} answer={answer}
+                         onResult={this.onResult}
+                         key={currentExercise}/>
+//...
+```
+
+using ```this.setState```'s [updater function](https://reactjs.org/docs/react-component.html#setstate) to collect our results into an array.
 
 
-At first here we're using the simple "props drilling" technique, where we pass props down from the top level until they get used
+Last thing's last: finishing the exercises and reporting the results
 
 
+in ```Dealer``` we'll want a "finish" button available at the end of the exercises
+
+where we had *just* a next button before, let's put a next / finish button
+
+./src/Dealer.js
+```js
+//...
+  render(){
+    const { currentExercise } = this.state;    
+    const last = currentExercise >= this.props.exercises.length -1;
+
+    const { prompt, answer } = this.state.exercises[ currentExercise ] || {};
+    
+    return (
+//...
+
+              {
+                last ? (
+                  <button onClick={this.finish}>Finish</button>
+                ) : (
+                  <button onClick={this.next}>Next</button>
+                )
+              }
+//...
+```
 
 
+and a ```this.finish``` function to reset the state and report the results
+
+./src/Dealer.js
+```js
+//...
+  finish = ()=> {
+    this.setState({ currentExercise: -1 });
+    this.props.onResult( this.state.results );
+  }
+
+//...
+```
+
+again, running this will throw an error - for the exact same reason!
+
+we are trying to call ```this.props.onResult```, but we haven't passed a function to the ```onResult``` prop on the ```<Dealer/>``` in ./src/App.js
 
 
+this function we're only calling once the lesson pack (array of exercises) has been completed. Later in the course, we'll use this function to save the result to the server.
 
+./src/App.js
+```js
+//...
+
+  onResult = results => console.log(results)
+
+//...
+
+          <Dealer exercises={exercises} onResult={this.onResult}/>
+
+//...
+```
+
+now we can work our way through the exercises and see our results on the console
+
+
+---
 
   - step2: build an view level component to load exercises and save results
     - installing react-router into our app, placeholder another view
