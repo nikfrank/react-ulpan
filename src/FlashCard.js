@@ -24,7 +24,11 @@ class FlashCard extends Component {
                    0;
 
     this.setState({ result });
-    this.props.onResult({ score: result });
+    this.props.onResult({
+      score: result,
+      prompt: this.props.prompt,
+      guess: this.state.guess,
+    });
   }
 
   render(){

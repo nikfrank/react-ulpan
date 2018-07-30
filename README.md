@@ -830,7 +830,11 @@ First thing's first: we need to send the result up from ```FlashCard```
   check = ()=> {
     const score = ( this.state.guess === this.props.answer ) ? 1 : 0
     this.setState({ result: score });
-    this.props.onResult({ result: score });
+    this.props.onResult({
+      score,
+      prompt: this.props.prompt,
+      guess: this.state.guess,
+    });
   }
   
 //...
