@@ -39,17 +39,7 @@ Agenda:
   - step3: build a view level component to CREATE / EDIT exercises
   - step4: build a view level component to READ && render results
 
-- Section 2: Server for saving exercises and results
-  - step0: booting an express server
-  - step1: defining API routes and their handlers
-    - responding with stub data
-  - step2: connecting to postgres (involves installation of postgres)
-    - hydrating tables with mock data
-    - reading data from the db for GET requests
-    - saving data from POST requests
-    - updating data with PUT or PATCH requests
-
-- Section 3: user login and identity
+- Section 2: user login and identity
   - step0: making a facebook app id
   - step1: integrating facebook login to our app
   - step2: using our facebook identity for CREATE and READ requests
@@ -58,9 +48,11 @@ Agenda:
   - step3: querying exercise groups (lessons) by user
   - step4: full integration of front end and server
 
-- Section 4: deploying a full stack app on heroku with postgres
+- Section 3: deploying a full stack app on heroku with postgres
   - bonus discussion of deployment on AWS / azure cloud runtimes
 
+
+---
 
 
 ## Section 0: concepts and introduction
@@ -189,7 +181,7 @@ Lastly in this front end application, we will write a View Component for creatin
 
 ---
 
-### Server architecture
+### Server architecture ((move this to ulpan-server))
 
 #### Database schema design
 
@@ -1054,8 +1046,13 @@ export default CreateExercise;
 at this point our application running in the browser should be back to how it was, teaching the same three exercises over and over and over. We're ready to build out more views for our users to navigate through and accomplish all of their dreams - as soon as we have a network layer.
 
 
+It is important that we organize the front-end into View Components before we build a network layer, as the View Component will be the Component level which houses the Network Behaviours. This is a design decision which will make it very easy to keep track of our Network Behaviours, as they will exist in a very limited number of places, and act in a consistent manner.
+
+
 **our** next big step is to organize our View Component (```DoExercise```) to load exercises from a server, and save results thereto - we'll call this "organizing a network layer". Making this connexion is the major step in learning "full-stack web development".
 
+
+---
 
 
 ### step3: writing our api in a well organized network layer
@@ -1077,6 +1074,22 @@ building the server is in [the ulpan-server companion course](https://github.com
 - if you're doing that course: work your way through step1: in memory service
 - if you aren't: clone the repo and do ```git checkout step2```
   - instructions are provided in ulpan-server's README for syncing up with this course
+
+
+Our server makes available to us the following API calls:
+
+| path | method | request body | response |
+|:---|:---|:---|:---|
+| /execise | GET | none | [ { exerciseJSON },.. ] |
+| /result | POST | { resultJSON } | successMessage |
+| /result/batch | POST | [{ resultJSON },.. ] | successMessages |
+
+
+first thing's first: let's load our exercises from the server
+
+#### reading from the server
+
+...
 
 
 - connecting to a fake api server
