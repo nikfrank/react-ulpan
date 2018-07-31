@@ -31,9 +31,11 @@ Agenda:
     - using stub data for multiple exercises
     - advancing through exercises
     - onResult callbacks and mocking network behaviour
-  - step2: build an view level component to load exercises and save results
+  - step2: build a view level component to load exercises and save results
     - installing react-router into our app, placeholder another view
-    - mocking our entire api in a well organized network layer
+  - step3: writing our api in a well organized network layer
+    - connecting to a fake api server
+    - mocking the network layer for offline devving
   - step3: build a view level component to CREATE / EDIT exercises
   - step4: build a view level component to READ && render results
 
@@ -931,14 +933,155 @@ this function we're only calling once the lesson pack (array of exercises) has b
 now we can work our way through the exercises and see our results on the console
 
 
+One last thing to say about the Dealer Component:
+
+the only two lines of code in the entire Component which has anything to do with FlashCard are rendering it and importing it; the logic for cycling through exercises and compiling results is independent of the Card. Later in the course, we'll write up other "exercise Card"s in place of FlashCard - we'll still be able to use the Dealer, even if our Cards are of a mixed variety, with only small modifications for choosing the Card Component Class.
+
 ---
 
-  - step2: build an view level component to load exercises and save results
-    - installing react-router into our app, placeholder another view
-    - mocking our entire api in a well organized network layer
+---
+
+
+### step2: build a view level component to load exercises and save results
+
+In this step we'll use ```react-router``` for the first time to separate View level Components in our app - we'll see it keeping track of the view in our URL with [client side routing](https://medium.com/@wilbo/server-side-vs-client-side-routing-71d710e9227f)
+
+
+#### installing react-router into our app, placeholder another view
+
+```$ yarn add react-router-dom```
+
+```$ touch ./src/Routes.js```
+
+We're going to declare our routing in ./src/Routes.js as a Component which chooses a View level Component to render - and we'll replace our ReactDOM.render statement in ./src/index.js to render the Routes as the root of our Component tree.
+
+
+./src/index.js
+```js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import Routes from './Routes';
+import registerServiceWorker from './registerServiceWorker';
+
+ReactDOM.render(<Routes />, document.getElementById('root'));
+registerServiceWorker();
+```
+
+the only change here is that we're replacing ```App``` with ```Routes```
+
+so let's make that Routes Component that we're already trying to render
+
+./src/Routes.js
+```js
+import React from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Redirect,
+  Switch,
+} from 'react-router-dom';
+
+import DoExercise from './DoExercise';
+import CreateExercise from './CreateExercise';
+
+export default ()=> (
+  <Router>
+    <div style={{ height: '100vh', width: '100vw' }}>
+      <Switch>
+        <Route path='/do' exact component={DoExercise}/>
+        <Route path='/create' exact component={CreateExercise}/>
+        <Redirect from='/' to='do'/>
+      </Switch>
+    </div>
+  </Router>
+);
+```
+
+this will set our default route ('/') to redirect to our DoExercise Component on /do, and set up a placeholder route on /create which we'll use later for making new exercises.
+
+react-router-dom has a good enough [getting started guide](https://reacttraining.com/react-router/web/guides/quick-start), their Components are very intuitive, so readying through their examples should be enough to learn the material.
+
+
+at this point our build will break, as we are trying to import Components from files which don't exist
+
+so let's fix that!
+
+
+##### rename ```App``` to ```DoExercise```
+
+```$ mv ./src/App.js ./src/DoExercise.js```
+```$ mv ./src/App.css ./src/DoExercise.css```
+
+in ./src/DoExercise.js, find and replace all ```App``` with ```DoExercise```
+in ./src/DoExercise.css, find and replace all ```App``` with ```DoExercise```
+
+
+##### make boilerplate for the ```CreateExercise``` View Component
+
+```
+$ touch ./src/CreateExercise.js
+$ touch ./src/CreateExercise.css
+```
+
+./src/CreateExercise.js
+```js
+import React, { Component } from 'react';
+import './CreateExercise.css';
+
+class CreateExercise extends Component {
+
+  render() {
+    return (
+      <div className='CreateExercise'>
+        Coming Soon...
+      </div>
+    );
+  }
+}
+
+export default CreateExercise;
+```
+
+./src/CreateExercise.css
+```css
+.CreateExercise {
+  text-align: center;
+}
+```
+
+
+at this point our application running in the browser should be back to how it was, teaching the same three exercises over and over and over. We're ready to build out more views for our users to navigate through and accomplish all of their dreams.
+
+
+**our** next big step is to organize our View Component (```DoExercise```) to load exercises from a server, and save results thereto - we'll call this "organizing a network layer". Making this connexion is the major step in learning "full-stack web development".
+
+
+building the server is in [the ulpan-server companion course](https://github.com/nikfrank/ulpan-server)
+- if you're doing that course: work your way through step1: in memory service
+- if you aren't: clone the repo and do ```git checkout step2```
+  - instructions are provided in ulpan-server's README for syncing up with this course
 
 
 
+
+
+### step3: writing our api in a well organized network layer
+
+Currently, our ```exercises``` are hard-coded into the ```state``` initialization of our ```DoExercise``` View Component, and our ```results``` are dumped onto the console, to be forgotten on the next page reload (like castles made of sand).
+
+
+We will now be programming both of these behaviours to act [asynchronously](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises)
+
+through [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) when our server is connected
+
+we will also cover how to mock network behaviour (for offline devving or when the server API endpoints are simply not ready yet)
+
+
+
+- connecting to a fake api server
+
+- mocking the network layer for offline devving
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).

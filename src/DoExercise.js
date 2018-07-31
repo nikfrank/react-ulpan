@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import './App.css';
+import './DoExercise.css';
 
 import Dealer from './Dealer';
 
-class App extends Component {
+class DoExercise extends Component {
 
   state = {
     exercises: [
@@ -40,9 +40,9 @@ class App extends Component {
     const { exercises } = this.state;
     
     return (
-      <div className='App'>
-        <header className='App-header'>
-          <h1 className='App-title'>Learn Hebrew!</h1>
+      <div className='DoExercise'>
+        <header className='DoExercise-header'>
+          <h1 className='DoExercise-title'>Learn Hebrew!</h1>
         </header>
         <div>
           <Dealer exercises={exercises} onResult={this.onResult}/>
@@ -52,4 +52,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default DoExercise;
