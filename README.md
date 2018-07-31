@@ -31,7 +31,7 @@ Agenda:
     - using stub data for multiple exercises
     - advancing through exercises
     - onResult callbacks and mocking network behaviour
-  - step2: build a view level component to load exercises and save results
+  - step2: view level components
     - installing react-router into our app, placeholder another view
   - step3: writing our api in a well organized network layer
     - connecting to a fake api server
@@ -942,7 +942,7 @@ the only two lines of code in the entire Component which has anything to do with
 ---
 
 
-### step2: build a view level component to load exercises and save results
+### step2: view level components
 
 In this step we'll use ```react-router``` for the first time to separate View level Components in our app - we'll see it keeping track of the view in our URL with [client side routing](https://medium.com/@wilbo/server-side-vs-client-side-routing-71d710e9227f)
 
@@ -1051,18 +1051,10 @@ export default CreateExercise;
 ```
 
 
-at this point our application running in the browser should be back to how it was, teaching the same three exercises over and over and over. We're ready to build out more views for our users to navigate through and accomplish all of their dreams.
+at this point our application running in the browser should be back to how it was, teaching the same three exercises over and over and over. We're ready to build out more views for our users to navigate through and accomplish all of their dreams - as soon as we have a network layer.
 
 
 **our** next big step is to organize our View Component (```DoExercise```) to load exercises from a server, and save results thereto - we'll call this "organizing a network layer". Making this connexion is the major step in learning "full-stack web development".
-
-
-building the server is in [the ulpan-server companion course](https://github.com/nikfrank/ulpan-server)
-- if you're doing that course: work your way through step1: in memory service
-- if you aren't: clone the repo and do ```git checkout step2```
-  - instructions are provided in ulpan-server's README for syncing up with this course
-
-
 
 
 
@@ -1077,6 +1069,14 @@ through [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using
 
 we will also cover how to mock network behaviour (for offline devving or when the server API endpoints are simply not ready yet)
 
+
+
+##### running the server
+
+building the server is in [the ulpan-server companion course](https://github.com/nikfrank/ulpan-server)
+- if you're doing that course: work your way through step1: in memory service
+- if you aren't: clone the repo and do ```git checkout step2```
+  - instructions are provided in ulpan-server's README for syncing up with this course
 
 
 - connecting to a fake api server
