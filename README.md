@@ -1195,7 +1195,7 @@ export default [
 
 that we will use later in this section when we build our offline network layer
 
-we'll see that in a minute, no worries for now!
+we'll see that in a minute, no worries for now - our exercises will load from the server!
 
 
 ##### why are we checking that there are exercises in render now?
@@ -1212,19 +1212,21 @@ remember our ```Dealer``` component loads the initial value of ```this.props.exe
 //...
 ```
 
-therefore, if we render ```<Dealer exercises={exercises} .../>``` as before, the first time our ```DoExercise``` component renders - since the API call hasn't finished yet - ```exercises``` will === ```[]``` and our Dealer will be instantiated with an empty array in ```this.state.exercises``` (feel free to try this out running by undoing the check)
+therefore, if we render ```<Dealer exercises={exercises} .../>``` as before, the first time our ```DoExercise``` component renders - since the API call hasn't finished yet - ```exercises``` will === ```[]``` and our Dealer will be instantiated with an empty array in ```this.state.exercises``` (feel free to try this out running by removing the check)
 
-by checking that ```exercises.length``` (is truthy ie is > 0) before rendering our ```<Dealer />```, we can make sure the Dealer has exercises
+by checking that ```exercises.length``` (is truthy ie is > 0) before rendering our ```<Dealer />```, we can make sure the Dealer has exercises when it is constructed / rendered for the first time
 
 in a production app, we would want to also check in Dealer, and perhaps wait until ```this.props.exercises.length``` to set the exercises in state (feature challenge)
 
+
+---
 
 
 #### connecting to a fake api server (writing)
 
 we still need to save our results to the server! Once we do that, our users will be able to track their progress while they learn.
 
-currently we are doing nothing (aka logging) our results when we receive them from the ```Dealer```
+currently we are logging (aka doing nothing with) our results when we receive them from the ```Dealer```
 
 ./src/DoExercise.js
 ```js
@@ -1244,12 +1246,13 @@ let's send that data to the POST /result route
 
 we have from our server
 
+... we'll need to call the api once for each result we receive 
 
 ./src/DoExercise.js
 ```js
 
   onResult = results =>
-    results.map( result => fetch(apiDomain+'/result', {
+    results.forEach( result => fetch(apiDomain+'/result', {
       method: 'POST',
       body: JSON.stringify( result ),
       headers:{ 'Content-Type': 'application/json' },
@@ -1271,9 +1274,9 @@ on the console in the browser, we should see the fake success message for each r
 
 #### (concept) mocking the network call for offline devving
 
-Working in a team project, we not have a local server available for us to run, or we may not want to rely on it when developing a feature with specific data requirements.
+Working in a team project, we might not have a local server available for us to run, or we may not want to rely on it when developing a feature with specific data requirements.
 
-In these cases, it will often be convenient to be able to replace our network calls with "fake network calls", which run asynchronously, but do not rely on any code outside of our front end application to complete.
+In these cases, it will often be convenient to be able to replace our network calls with "fake network calls", which run asynchronously, but do not rely on any code outside of our front end application to complete, and will always return the data we want them to.
 
 
 This pattern is called "network mocking" and is one of my favourite tools for maintaining productivity independence for server and front end teams.
@@ -1301,7 +1304,7 @@ import exerciseMocks from './networkMocks/exercises';
 ///
 ```
 
-This is fine if we only have one network call in our entire application - however, as soon as we have more, we won't want to repeat this logic over and over.  Also the ```setTimeout``` will not afford us the conveniences of Promises if we want to chain together any other logic to our network calls (ie rendering a waiting gif)
+This is fine if we only have one network call in our entire application - however, as soon as we have more, we won't want to repeat this logic over and over.  Also the ```setTimeout``` will not afford us the conveniences of Promises if we want to chain together any other logic to our network calls (ie rendering a waiting gif, waiting for multiple calls)
 
 
 We'll need a more general solution which allows us to write real and fake versions of each network call using Promises, and decide which to use based on a single environment variable

@@ -12,7 +12,7 @@ class DoExercise extends Component {
   }
 
   onResult = results =>
-    results.map( result => fetch(apiDomain+'/result', {
+    results.forEach( result => fetch(apiDomain+'/result', {
       method: 'POST',
       body: JSON.stringify( result ),
       headers:{ 'Content-Type': 'application/json' },
