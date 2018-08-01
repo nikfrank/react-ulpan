@@ -1412,9 +1412,42 @@ Now our ```DoExercise``` Component doesn't need to know anything about how the n
 
 #### toggling between network targets
 
+As discussed, we want to be able to swap in fake network calls for when we don't want to (or can't) run the server
 
 
+##### what does a *fake* network call look like?
 
+All a fake network call has to do is act like the real ones
+
+the real calls are just functions that return a Promise:
+
+```js
+(some, args)=> {
+  //... any logic
+  const someData = {}; // this will vary per request
+
+  return Promise.resolve( someData );
+}
+```
+
+often this type of function is called a ```hook```
+
+in our fakes, it is important that we resolve the same kind of data (```readExercise```'s fake needs to resolve an array of JSON exercises)
+
+we can - if we want - ignore the input arguments, as often in mocks we will simply respond with a mock JSON.
+
+
+##### ok let's write some fakes!
+
+```$ touch ./src/networkFakes.js```
+
+
+for ```readExercise```, we'll import a mock JSON and resolve it in a Promise
+
+./src/networkFakes.js
+```js
+
+```
 
 
 
