@@ -1491,6 +1491,32 @@ export const readExercises = networkCalls[target].readExercises;
 export const createResult = networkCalls[target].createResult;
 ```
 
+we can now run our app without the ulpan-server running!
+
+
+to switch back to the server networkCalls (which **do** use the ulpan-server) all we need to do is:
+
+./src/networkConfig.js
+```js
+//...
+
+export const target = 'server';
+```
+
+in some industry applications, the configuratino value will be provided to our app from an environment variable, so that the devOps team's deployment system can tell us the correct ```apiDomain``` or ```target``` for a given build
+
+some staging builds will use fakes, and often testing and staging builds will have a specific ```apiDomain``` or domains which point to testing / staging servers.
+
+
+---
+
+if this import / export business is new to you, [take a read through anything from the first google result page on the topic](https://www.google.com/search?q=es6+exports)
+
+
+[!importer-exporter](https://i.pinimg.com/originals/30/21/b7/3021b793c398c34de3865ffe3ed0ab32.jpg)
+
+
+---
 
 
 
