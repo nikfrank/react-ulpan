@@ -1510,6 +1510,12 @@ some staging builds will use fakes, and often testing and staging builds will ha
 
 ---
 
+
+in our next steps, we'll be building out the two other views in our application - all three will share the network layer, so it will make our work simpler that we've organized it properly in advance.
+
+
+---
+
 if this import / export business is new to you, [take a read through anything from the first google result page on the topic](https://www.google.com/search?q=es6+exports)
 
 <img src='https://i.pinimg.com/originals/30/21/b7/3021b793c398c34de3865ffe3ed0ab32.jpg' height=250 width=325/>
@@ -1518,7 +1524,10 @@ if this import / export business is new to you, [take a read through anything fr
 ---
 
 
+### step4: build a view level component to CREATE / EDIT exercises
 
+
+### step5: build a view level component to READ && render results
 
 
 
