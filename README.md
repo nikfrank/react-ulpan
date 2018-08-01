@@ -34,10 +34,11 @@ Agenda:
   - step2: view level components
     - installing react-router into our app, placeholder another view
   - step3: writing our api in a well organized network layer
-    - connecting to a fake api server
-    - mocking the network layer for offline devving
-  - step3: build a view level component to CREATE / EDIT exercises
-  - step4: build a view level component to READ && render results
+    - connecting to a fake api server (reading)
+    - (concept) mocking the network call for offline devving
+    - separating our network calls from our component logic
+  - step4: build a view level component to CREATE / EDIT exercises
+  - step5: build a view level component to READ && render results
 
 - Section 2: user login and identity
   - step0: making a facebook app id
@@ -50,6 +51,12 @@ Agenda:
 
 - Section 3: deploying a full stack app on heroku with postgres
   - bonus discussion of deployment on AWS / azure cloud runtimes
+
+- Section 4: testing front end components
+  - behaviour testing
+  - unit testing
+  - network integration testing
+
 
 
 ---
@@ -1075,8 +1082,19 @@ building the server is in [the ulpan-server companion course](https://github.com
 - if you aren't: clone the repo and do ```git checkout step1```
   - instructions are provided in ulpan-server's README for syncing up with this course
 
+then run
 
-Our server makes available to us the following API calls:
+```
+$ cd ~/code/ulpan-server
+$ npm start
+```
+
+to run the server locally
+
+----
+
+
+Our server makes available to us at least the following API call:
 
 | path | method | request body | response |
 |:---|:---|:---|:---|
@@ -1085,9 +1103,10 @@ Our server makes available to us the following API calls:
 | /result/batch | POST | [{ resultJSON },.. ] | successMessages |
 
 
-first thing's first: let's load our exercises from the server
+so let's get to it: let's load our exercises from the server
 
-#### reading from the server
+
+#### connecting to a fake api server (reading)
 
 in [workbook 4v2](https://github.com/nikfrank/react-course-workbook-4-v2), we covered GET requests in event handlers / lifecycle functions... eg:
 
@@ -1121,14 +1140,135 @@ the pattern we use here will be the same:
 
 ./src/DoExercise.js
 ```js
+//...
+import Dealer from './Dealer';
 
+const apiDomain = 'http://localhost:4000';
+
+class DoExercise extends Component {
+
+  state = {
+    exercises: [],
+  }
+
+  componentDidMount(){
+    fetch(apiDomain+'/exercise').then(res => res.json())
+                                .then( exercises => this.setState({ exercises }) );
+  }
+
+//...
+
+        <div>
+          {!exercises.length ? null : (
+             <Dealer exercises={exercises} onResult={this.onResult}/>
+          )}
+        </div>
+
+//...
 ```
 
+##### why is apiDomain a const?
+
+from time to time in development and production, our api domain will change
+
+eg. we may have a special api server set up for [testing](https://www.google.com/search?q=testing+environment) / [staging](https://www.google.com/search?q=staging+server) / [local development](https://www.google.com/search?q=developing+node+server+locally) / [production](https://www.google.com/search?q=production+environment)
+
+therefore, it is useful to split such values into constants, and ultimately into configuration objects. We're just taking the first step of a good habit here.
 
 
-- connecting to a fake api server
+##### where did the mock data go?
 
-- mocking the network layer for offline devving
+I've made a networkMocks directory
+
+```
+$ mkdir ./src/networkMocks
+$ touch ./src/networkMocks/exercises.js
+```
+
+./src/networkMocks/exercises.js
+```js
+export default [
+  // ... the exercises JSON we had before
+];
+```
+
+that we will use later in this section when we build our offline network layer
+
+we'll see that in a minute, no worries for now!
+
+
+##### why are we checking that there are exercises in render now?
+
+remember our ```Dealer``` component loads the initial value of ```this.props.exercises``` into state
+
+./src/Dealer.js
+```js
+//...
+  state = {
+    exercises: this.props.exercises,
+    //...
+  }
+//...
+```
+
+therefore, if we render ```<Dealer exercises={exercises} .../>``` as before, the first time our ```DoExercise``` component renders - since the API call hasn't finished yet - ```exercises``` will === ```[]``` and our Dealer will be instantiated with an empty array in ```this.state.exercises``` (feel free to try this out running by undoing the check)
+
+by checking that ```exercises.length``` (is truthy ie is > 0) before rendering our ```<Dealer />```, we can make sure the Dealer has exercises
+
+in a production app, we would want to also check in Dealer, and perhaps wait until ```this.props.exercises.length``` to set the exercises in state (feature challenge)
+
+
+
+#### (concept) mocking the network call for offline devving
+
+Working in a team project, we not have a local server available for us to run, or we may not want to rely on it when developing a feature with specific data requirements.
+
+In these cases, it will often be convenient to be able to replace our network calls with "fake network calls", which run asynchronously, but do not rely on any code outside of our front end application to complete.
+
+
+This pattern is called "network mocking" and is one of my favourite tools for maintaining productivity independence for server and front end teams.
+
+
+Let's see an example of what this might look like here:
+
+```js
+//...
+import { apiDomain, target } from './networkConfig';
+import exerciseMocks from './networkMocks/exercises';
+
+//...
+
+  componentDidMount(){
+    if( target === 'server' )
+      fetch(apiDomain+'/exercise').then(res => res.json())
+                                  .then( exercises => this.setState({ exercises }) );
+
+    else
+      setTimeout(()=> this.setState({ exercises: exerciseMocks }), 100);
+  }
+
+
+///
+```
+
+This is fine if we only have one network call in our entire application - however, as soon as we have more, we won't want to repeat this logic over and over.  Also the ```setTimeout``` will not afford us the conveniences of Promises if we want to chain together any other logic to our network calls (ie rendering a waiting gif)
+
+
+We'll need a more general solution which allows us to write real and fake versions of each network call using Promises, and decide which to use based on a single environment variable
+
+
+The technique we're about to learn has saved me countless hours while developing front-ends AND servers.
+
+
+
+#### separating our network calls from our component logic
+
+
+
+
+
+
+
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
