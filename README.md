@@ -38,6 +38,7 @@ Agenda:
     - connecting to a fake api server (writing)
     - (concept) mocking the network call for offline devving
     - separating our network calls from our component logic
+    - toggling between network targets
   - step4: build a view level component to CREATE / EDIT exercises
   - step5: build a view level component to READ && render results
 
@@ -1301,7 +1302,7 @@ import exerciseMocks from './networkMocks/exercises';
   }
 
 
-///
+// ...
 ```
 
 This is fine if we only have one network call in our entire application - however, as soon as we have more, we won't want to repeat this logic over and over.  Also the ```setTimeout``` will not afford us the conveniences of Promises if we want to chain together any other logic to our network calls (ie rendering a waiting gif, waiting for multiple calls)
@@ -1315,10 +1316,101 @@ The technique we're about to learn has saved me countless hours while developing
 We will use a similar technique later when we build "offline mode" into our app.
 
 
+---
 
 
 #### separating our network calls from our component logic
 
+
+Our mission here is to move all of our networkConfig to one place, and all of our network calls to another (which can import the config)
+
+so let's make some files
+
+```
+$ touch ./src/networkConfig.js
+$ touch ./src/networkCalls.js
+```
+
+let's move our apiDomain into the config file where it belongs
+
+./src/networkConfig.js
+```js
+export const apiDomain= 'http://localhost:4000';
+```
+
+and move our network calls to where they belong
+
+./src/networkCalls.js
+```js
+import { apiDomain } from './networkConfig';
+
+export const readExercises = ()=> fetch(apiDomain+'/exercise').then(res => res.json());
+
+export const createResult =
+  result => fetch(apiDomain+'/result', {
+    method: 'POST',
+    body: JSON.stringify( result ),
+    headers:{ 'Content-Type': 'application/json' },
+    
+  }).then( res => res.json() );
+```
+
+
+now we can use our network calls from ```DoExercise```
+
+./src/DoExercise.js
+```js
+//...
+
+import Dealer from './Dealer';
+
+import { readExercises, createResult } from './networkCalls';
+
+class DoExercise extends Component {
+
+  state = {
+    exercises: [],
+  }
+
+  onResult = results =>
+    Promise.all( results.map( createResult ) ).then( msgs=> console.log(msgs) )
+
+
+  componentDidMount(){
+    readExercises().then( exercises => this.setState({ exercises }) );
+  }
+
+//...
+```
+
+
+```readExercises()``` for now does not require a parameter (later we'll add a ```query``` param when we load exercises by user demand), so we can simply call it and expect our exercises to be resolved to us.
+
+
+```createResult(result)```, on the other hand, definitely needs a parameter (the result we wish to create)
+
+in this case, as we are creating multiple ```result```s, it is convenient to use [Promise.all](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all) to wait for all of the ```createResult``` calls to resolve
+
+You'll see that the resolved messages come now as an array (in the browser console)
+
+##### extra learning:
+
+using [Array.prototype.map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) to map our results each to an "api-call Promise" and then wrapping that "array of Promises" in a ```Promise.all( ... )``` is a nifty trick that will work whenever we have batch calls.
+
+this also uses [tacit programming style](https://lucasmreis.github.io/blog/pointfree-javascript/), which is a bit [more poetic than imperative](https://codeburst.io/from-imperative-to-functional-javascript-5dc9e16d9184)
+
+---
+
+Now our ```DoExercise``` Component doesn't need to know anything about how the network calls work, so we'll be able to swap them out for fakes very easily.
+
+
+((feature challenge, we'll respond to the results creation completion by displaying feedback to the user))
+
+
+---
+
+
+#### toggling between network targets
 
 
 

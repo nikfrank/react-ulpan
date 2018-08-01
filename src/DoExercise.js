@@ -3,7 +3,7 @@ import './DoExercise.css';
 
 import Dealer from './Dealer';
 
-const apiDomain = 'http://localhost:4000';
+import { readExercises, createResult } from './networkCalls';
 
 class DoExercise extends Component {
 
@@ -12,17 +12,11 @@ class DoExercise extends Component {
   }
 
   onResult = results =>
-    results.forEach( result => fetch(apiDomain+'/result', {
-      method: 'POST',
-      body: JSON.stringify( result ),
-      headers:{ 'Content-Type': 'application/json' },
-      
-    }).then( res => res.json() ).then( msg=> console.log(msg) ))
+    Promise.all( results.map( createResult ) ).then( msgs=> console.log(msgs) )
 
 
   componentDidMount(){
-    fetch(apiDomain+'/exercise').then(res => res.json())
-                                .then( exercises => this.setState({ exercises }) );
+    readExercises().then( exercises => this.setState({ exercises }) );
   }
   
   render() {
