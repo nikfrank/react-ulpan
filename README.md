@@ -35,6 +35,7 @@ Agenda:
     - installing react-router into our app, placeholder another view
   - step3: writing our api in a well organized network layer
     - connecting to a fake api server (reading)
+    - connecting to a fake api server (writing)
     - (concept) mocking the network call for offline devving
     - separating our network calls from our component logic
   - step4: build a view level component to CREATE / EDIT exercises
@@ -1094,13 +1095,12 @@ to run the server locally
 ----
 
 
-Our server makes available to us at least the following API call:
+Our server makes available to us the following API calls:
 
 | path | method | request body | response |
 |:---|:---|:---|:---|
 | /execise | GET | none | [ { exerciseJSON },.. ] |
 | /result | POST | { resultJSON } | successMessage |
-| /result/batch | POST | [{ resultJSON },.. ] | successMessages |
 
 
 so let's get to it: let's load our exercises from the server
@@ -1219,6 +1219,55 @@ in a production app, we would want to also check in Dealer, and perhaps wait unt
 
 
 
+#### connecting to a fake api server (writing)
+
+we still need to save our results to the server! Once we do that, our users will be able to track their progress while they learn.
+
+currently we are doing nothing (aka logging) our results when we receive them from the ```Dealer```
+
+./src/DoExercise.js
+```js
+//...
+
+  onResult = results = console.log(results);
+
+//...
+```
+
+let's send that data to the POST /result route
+
+| path | method | request body | response |
+|:---|:---|:---|:---|
+| /result | POST | { resultJSON } | successMessage |
+
+
+we have from our server
+
+
+./src/DoExercise.js
+```js
+
+  onResult = results =>
+    results.map( result => fetch(apiDomain+'/result', {
+      method: 'POST',
+      body: JSON.stringify( result ),
+      headers:{ 'Content-Type': 'application/json' },
+      
+    }).then( res => res.json() ).then( msg=> console.log(msg) ))
+
+//...
+```
+
+now on the console in our server's terminal, we should see the POSTed results logged
+
+on the console in the browser, we should see the fake success message for each result.
+
+
+
+
+---
+
+
 #### (concept) mocking the network call for offline devving
 
 Working in a team project, we not have a local server available for us to run, or we may not want to rely on it when developing a feature with specific data requirements.
@@ -1258,6 +1307,9 @@ We'll need a more general solution which allows us to write real and fake versio
 
 
 The technique we're about to learn has saved me countless hours while developing front-ends AND servers.
+
+We will use a similar technique later when we build "offline mode" into our app.
+
 
 
 

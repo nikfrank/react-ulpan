@@ -11,7 +11,14 @@ class DoExercise extends Component {
     exercises: [],
   }
 
-  onResult = results => console.log(results)
+  onResult = results =>
+    results.map( result => fetch(apiDomain+'/result', {
+      method: 'POST',
+      body: JSON.stringify( result ),
+      headers:{ 'Content-Type': 'application/json' },
+      
+    }).then( res => res.json() ).then( msg=> console.log(msg) ))
+
 
   componentDidMount(){
     fetch(apiDomain+'/exercise').then(res => res.json())
