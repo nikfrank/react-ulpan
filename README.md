@@ -1344,16 +1344,23 @@ and move our network calls to where they belong
 ```js
 import { apiDomain } from './networkConfig';
 
-export const readExercises = ()=> fetch(apiDomain+'/exercise').then(res => res.json());
-
-export const createResult =
-  result => fetch(apiDomain+'/result', {
-    method: 'POST',
-    body: JSON.stringify( result ),
-    headers:{ 'Content-Type': 'application/json' },
+const networkCalls = {
+  server: {
+    readExercises: ()=> fetch(apiDomain+'/exercise').then(res => res.json()),
     
-  }).then( res => res.json() );
+    createResult: result => fetch(apiDomain+'/result', {
+      method: 'POST',
+      body: JSON.stringify( result ),
+      headers:{ 'Content-Type': 'application/json' },
+    }).then( res => res.json() ),
+  },
+};
+
+export const readExercises = networkCalls.server.readExercises;
+export const createResult = networkCalls.server.createResult;
 ```
+
+(why we've nested them in a dictionary object will be clear in the next step)
 
 
 now we can use our network calls from ```DoExercise```
@@ -1439,15 +1446,53 @@ we can - if we want - ignore the input arguments, as often in mocks we will simp
 
 ##### ok let's write some fakes!
 
-```$ touch ./src/networkFakes.js```
+
+for ```readExercise``` and ```createResult```, we'll import a mock JSON and resolve it in a Promise
 
 
-for ```readExercise```, we'll import a mock JSON and resolve it in a Promise
-
-./src/networkFakes.js
+./src/networkCalls.js
 ```js
+import { apiDomain } from './networkConfig';
 
+import exerciseMock from './networkMocks/exercise';
+import resultResponseMock from './networkMocks/resultResponse';
+
+const networkCalls = {
+  fake: {
+    readExercises: ()=> Promise.resolve( exerciseMock ),
+    createResult: ()=> Promise.resolve( resultResponseMock ),
+  },
+
+  server: {
+    //...
+  },
+};
+
+//...
 ```
+
+
+in order to use the fakes (or at least to choose which of the two targets to target) we'll add a ```target``` to our networkConfig
+
+./src/networkConfig.js
+```js
+export apiDomain = 'http://localhost:4000';
+
+export target = 'fakes'; // this is the one value to toggle if we wanted 'server'
+```
+
+and we'll use it in ./src/networkCalls.js to decide the exports
+```js
+import { apiDomain, target } from ./networkConfig';
+
+//...
+
+export const readExercises = networkCalls[target].readExercises;
+export const createResult = networkCalls[target].createResult;
+```
+
+
+
 
 
 

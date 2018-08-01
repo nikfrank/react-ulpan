@@ -1,0 +1,1 @@
+export default { createdId: 'fakeId' };

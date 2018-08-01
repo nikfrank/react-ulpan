@@ -1,1 +1,3 @@
-export const apiDomain= 'http://localhost:4000';
+export const apiDomain = 'http://localhost:4000';
+
+export const target = 'fake';
