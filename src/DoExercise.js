@@ -3,6 +3,8 @@ import './DoExercise.css';
 
 import Dealer from './Dealer';
 
+const apiUrl = 'http://localhost:4000';
+
 class DoExercise extends Component {
 
   state = {
@@ -35,6 +37,11 @@ class DoExercise extends Component {
   }
 
   onResult = results => console.log(results)
+
+  componentDidMount(){
+    fetch(apiUrl+'/exercise').then(res => res.json())
+                             .then( exercises => console.log(exercises) );
+  }
   
   render() {
     const { exercises } = this.state;

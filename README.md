@@ -1071,8 +1071,8 @@ we will also cover how to mock network behaviour (for offline devving or when th
 ##### running the server
 
 building the server is in [the ulpan-server companion course](https://github.com/nikfrank/ulpan-server)
-- if you're doing that course: work your way through step1: in memory service
-- if you aren't: clone the repo and do ```git checkout step2```
+- if you're doing that course: work your way through step0: 
+- if you aren't: clone the repo and do ```git checkout step1```
   - instructions are provided in ulpan-server's README for syncing up with this course
 
 
@@ -1089,7 +1089,41 @@ first thing's first: let's load our exercises from the server
 
 #### reading from the server
 
-...
+in [workbook 4v2](https://github.com/nikfrank/react-course-workbook-4-v2), we covered GET requests in event handlers / lifecycle functions... eg:
+
+```js
+//...
+
+class Widget extends Component {
+  state = { items: [] }
+  loadInit = ()=> fetch('/items').then(res => res.json())
+                                 .then( items=> this.setState({ items }) )
+
+  componentDidMount(){
+    this.loadInit();
+  }
+
+  render(){
+    const { items } = this.state;
+
+    return (
+      <ul>
+        {items.map(item=> (
+          <li key={item.id}>{item.displayName}</li>
+      </ul>
+    );
+  }
+}
+//...
+```
+
+the pattern we use here will be the same:
+
+./src/DoExercise.js
+```js
+
+```
+
 
 
 - connecting to a fake api server
