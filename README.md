@@ -1478,12 +1478,12 @@ in order to use the fakes (or at least to choose which of the two targets to tar
 ```js
 export apiDomain = 'http://localhost:4000';
 
-export target = 'fakes'; // this is the one value to toggle if we wanted 'server'
+export target = 'fake'; // this is the one value to toggle if we wanted 'server'
 ```
 
 and we'll use it in ./src/networkCalls.js to decide the exports
 ```js
-import { apiDomain, target } from ./networkConfig';
+import { apiDomain, target } from './networkConfig';
 
 //...
 
@@ -1503,7 +1503,7 @@ to switch back to the server networkCalls (which **do** use the ulpan-server) al
 export const target = 'server';
 ```
 
-in some industry applications, the configuratino value will be provided to our app from an environment variable, so that the devOps team's deployment system can tell us the correct ```apiDomain``` or ```target``` for a given build
+in some industry applications, the configuration value will be provided to our app from an environment variable, so that the devOps team's deployment system can tell us the correct ```apiDomain``` or ```target``` for a given build
 
 some staging builds will use fakes, and often testing and staging builds will have a specific ```apiDomain``` or domains which point to testing / staging servers.
 
@@ -1513,7 +1513,7 @@ some staging builds will use fakes, and often testing and staging builds will ha
 if this import / export business is new to you, [take a read through anything from the first google result page on the topic](https://www.google.com/search?q=es6+exports)
 
 
-[!importer-exporter](https://i.pinimg.com/originals/30/21/b7/3021b793c398c34de3865ffe3ed0ab32.jpg)
+![importer-exporter](https://i.pinimg.com/originals/30/21/b7/3021b793c398c34de3865ffe3ed0ab32.jpg)
 
 
 ---
