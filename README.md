@@ -1512,8 +1512,7 @@ some staging builds will use fakes, and often testing and staging builds will ha
 
 if this import / export business is new to you, [take a read through anything from the first google result page on the topic](https://www.google.com/search?q=es6+exports)
 
-
-![importer-exporter](https://i.pinimg.com/originals/30/21/b7/3021b793c398c34de3865ffe3ed0ab32.jpg)
+<img src='https://i.pinimg.com/originals/30/21/b7/3021b793c398c34de3865ffe3ed0ab32.jpg' height=250 width=325/>
 
 
 ---
