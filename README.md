@@ -1129,6 +1129,7 @@ class Widget extends Component {
       <ul>
         {items.map(item=> (
           <li key={item.id}>{item.displayName}</li>
+        ) )}
       </ul>
     );
   }
