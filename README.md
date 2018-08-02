@@ -1520,6 +1520,15 @@ some staging builds will use fakes, and often testing and staging builds will ha
 in our next steps, we'll be building out the two other views in our application - all three will share the network layer, so it will make our work simpler that we've organized it properly in advance.
 
 
+the currently available server API will not be enough to build these routes, as is sometimes the case in real life
+
+in this course, however, we have the choice to work ahead in three different ways:
+- build the server routes ourself (full stack course)
+- checkout the next step# git branch where the routes are available (front end course)
+- mock all the network behaviour on the front end (real life mode)
+
+often in real life, it is the best choice to mock the network calls and wait for the server team to publish the new API routes (and often we don't have a fake server)... if you choose option 3, you're braver than I would be!
+
 ---
 
 if this import / export business is new to you, [take a read through anything from the first google result page on the topic](https://www.google.com/search?q=es6+exports)
