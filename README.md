@@ -40,7 +40,13 @@ Agenda:
     - separating our network calls from our component logic
     - toggling between network targets
   - step4: build a view level component to CREATE / EDIT exercises
+    - build from server step2 CREATE w pack and tags
+    - add query by feature to DoExercise view
+    - build from server step3 EDIT exercise feature
   - step5: build a view level component to READ && render results
+    - build from server step2 basic charts and basic querying
+    - build from server step3 deeper querying
+      - add FK -> exercise on result for tags queries
 
 - Section 2: user login and identity
   - step0: making a facebook app id
