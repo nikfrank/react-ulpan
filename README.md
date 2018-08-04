@@ -1665,14 +1665,80 @@ Now the users will want to click on a pack and have those exercises load
 
 let's implement a networkCall to use our POST /exercise/query API.
 
+./src/networkCalls.js
+```js
+//...
+
+const queryExercisesMock = exerciseMock.filter( ({ pack })=> pack === 'cafe' );
+
+//... in fake:
+    queryExercises: ()=> Promise.resolve( queryExercisesMock ),
+
+//... in server:
+    queryExercises: query=> fetch(apiDomain+'/exercise/query', {
+      method: 'POST',
+      body: JSON.stringify( query ),
+      headers:{ 'Content-Type': 'application/json' },
+    }).then( res => res.json() ),
+
+//...
+export const queryExercises = networkCalls[target].queryExercises;
+//...
+```
+
+we'll expect the Component to call ```queryExercises``` with a ```{ pack, tag }``` query
+
+
+let's upgrade our ```readExercises``` call to ```queryExercises```, and trigger the call when the user selects from the list of packs:
+
+./src/DoExercise.js
+```js
+//...
+
+import { queryExercises, readPacks, createResult } from './networkCalls';
+
+//...
+
+
+  onResult = results => {
+    Promise.all( results.map( createResult ) ).then( msgs=> console.log(msgs) );
+    this.setState({ exercises: [] });
+  }
+
+  componentDidMount(){
+    readPacks().then( packs=> this.setState({
+      packs: Object.keys(packs).map(pack=> ({ name: pack, size: packs[pack] }) ),
+    }) )
+  }
+
+  setPack = (pack)=>
+    queryExercises({ pack }).then( exercises => this.setState({ exercises }) )
+
+//...
+
+                  <li key={pack.name} onClick={()=> this.setPack(pack.name)}>
+                    {pack.name} - {pack.size}
+                  </li>
+//...
+```
+
+also here, once the user is finished a pack, we are resetting ```state.exercises``` to an empty array.
+
+
+(( CSS, refactor into component <PackList packs onSelect/> ))
+
+
+now that we've upgaded ```DoExercise``` to all the latest features available from the server, we can move ahead to the ```CreateExercise``` View (finally)
+
 
 ---
+
 
 #### build View from server step2 CREATE w pack and tags
 
 our main goal in this step is to build a view which will allow users to create exercises.
 
-We will make a form which will receive values for each field on the ```exercise``` schema:
+We will make a form to put in values for each field on the ```exercise``` schema:
 
 ```js
   {
@@ -1687,7 +1753,7 @@ We will make a form which will receive values for each field on the ```exercise`
   },
 ```
 
-Once we've built a working form for each value, we'll add a feature for "pack" to make selecting a previous value easier (choose from list / new pack... UX flow) using the same networkCall we used in DoExercise to populate our pack selection component.
+Once we've built a working form, we'll add a feature for "pack" to make selecting a previous value easier (choose from list / new pack... UX flow) using the same networkCall we used in DoExercise to populate our pack selection component.
 
 
 
@@ -1703,6 +1769,9 @@ Once we've built a working form for each value, we'll add a feature for "pack" t
     readPacks().then( packs=> this.setState({ availablePacks: Object.keys(packs) }) );
   }
 ```
+
+
+(( refactor packs list into nice component in previous step ))
 
 
 

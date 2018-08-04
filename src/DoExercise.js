@@ -3,7 +3,7 @@ import './DoExercise.css';
 
 import Dealer from './Dealer';
 
-import { readExercises, readPacks, createResult } from './networkCalls';
+import { queryExercises, readPacks, createResult } from './networkCalls';
 
 class DoExercise extends Component {
 
@@ -12,18 +12,19 @@ class DoExercise extends Component {
     exercises: [],
   }
 
-  onResult = results =>
-    Promise.all( results.map( createResult ) ).then( msgs=> console.log(msgs) )
-
+  onResult = results => {
+    Promise.all( results.map( createResult ) ).then( msgs=> console.log(msgs) );
+    this.setState({ exercises: [] });
+  }
 
   componentDidMount(){
     readPacks().then( packs=> this.setState({
       packs: Object.keys(packs).map(pack=> ({ name: pack, size: packs[pack] }) ),
     }) )
-
-    // replace this with query packs onSetCurrentPack
-    //readExercises().then( exercises => this.setState({ exercises }) );
   }
+
+  setPack = (pack)=>
+    queryExercises({ pack }).then( exercises => this.setState({ exercises }) )
   
   render() {
     const { exercises, packs } = this.state;
@@ -37,7 +38,9 @@ class DoExercise extends Component {
           {!exercises.length ? !packs.length ? null : (
              <ul>
                {packs.map( pack=> (
-                  <li key={pack.name}>{pack.name} - {pack.size}</li>
+                  <li key={pack.name} onClick={()=> this.setPack(pack.name)}>
+                    {pack.name} - {pack.size}
+                  </li>
                 ) )}
              </ul>
            ) : (
