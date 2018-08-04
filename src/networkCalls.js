@@ -27,4 +27,5 @@ const networkCalls = {
 };
 
 export const readExercises = networkCalls[target].readExercises;
+export const readPacks = networkCalls[target].readPacks;
 export const createResult = networkCalls[target].createResult;

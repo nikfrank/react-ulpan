@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './CreateExercise.css';
 
+import { readPacks } from './networkCalls';
+
 class CreateExercise extends Component {
   state = {
     pack: '',
@@ -10,6 +12,10 @@ class CreateExercise extends Component {
     tags: [],
 
     availablePacks: [],
+  }
+
+  componentDidMount(){
+    readPacks().then( packs=> this.setState({ availablePacks: Object.keys(packs) }) );
   }
   
   render() {

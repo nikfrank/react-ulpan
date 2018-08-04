@@ -3,11 +3,12 @@ import './DoExercise.css';
 
 import Dealer from './Dealer';
 
-import { readExercises, createResult } from './networkCalls';
+import { readExercises, readPacks, createResult } from './networkCalls';
 
 class DoExercise extends Component {
 
   state = {
+    packs: [],
     exercises: [],
   }
 
@@ -16,11 +17,16 @@ class DoExercise extends Component {
 
 
   componentDidMount(){
-    readExercises().then( exercises => this.setState({ exercises }) );
+    readPacks().then( packs=> this.setState({
+      packs: Object.keys(packs).map(pack=> ({ name: pack, size: packs[pack] }) ),
+    }) )
+
+    // replace this with query packs onSetCurrentPack
+    //readExercises().then( exercises => this.setState({ exercises }) );
   }
   
   render() {
-    const { exercises } = this.state;
+    const { exercises, packs } = this.state;
     
     return (
       <div className='DoExercise'>
@@ -28,7 +34,13 @@ class DoExercise extends Component {
           <h1 className='DoExercise-title'>Learn Hebrew!</h1>
         </header>
         <div>
-          {!exercises.length ? null : (
+          {!exercises.length ? !packs.length ? null : (
+             <ul>
+               {packs.map( pack=> (
+                  <li key={pack.name}>{pack.name} - {pack.size}</li>
+                ) )}
+             </ul>
+           ) : (
              <Dealer exercises={exercises} onResult={this.onResult}/>
           )}
         </div>

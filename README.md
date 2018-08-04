@@ -1597,6 +1597,8 @@ we can confirm this is working by working through some exercises and:
 
 #### add select by pack feature to DoExercise view
 
+(( wireframe the UX for packs, select pack, do exercises ... images ))
+
 we can use the mock data from our server to build a component to select which lesson pack we wish to attempt (this will work just the same once we upgrade the server to work with a real database of course)
 
 
@@ -1617,6 +1619,8 @@ const packsMock = exerciseMock.reduce( (prev, pack)=> ({
     readPacks: ()=> fetch(apiDomain+'/exercise/packs').then(res => res.json()),
 
 //...
+export const readPacks = networkCalls[target].readPacks;
+//...
 ```
 
 maintaining our fake: and server: calls is a habit we should never give up on!
@@ -1627,9 +1631,39 @@ we'll reuse this networkCall in CreateExercise form for pack select.
 Now that we can read the { [pack]: SIZE,.. } response, let's load that in our ```componentDidMount``` on ```DoExercise``` to populate a list for the user to select from
 
 
+./src/DoExercise.js
+```js
+//...
+  componentDidMount(){
+    readPacks().then( packs=> this.setState({
+      packs: Object.keys(packs).map(pack=> ({ name: pack, size: packs[pack] }) ),
+    }) )
 
+   //...
+  }
+
+//...
+        <div>
+          {!exercises.length ? !packs.length ? null : (
+             <ul>
+               {packs.map( pack=> (
+                  <li key={pack.name}>{pack.name} - {pack.size}</li>
+                ) )}
+             </ul>
+           ) : (
+             <Dealer exercises={exercises} onResult={this.onResult}/>
+          )}
+        </div>
+
+//...
+```
 
 (( perhaps later we'll also get the tags with this API ))
+
+
+Now the users will want to click on a pack and have those exercises load
+
+let's implement a networkCall to use our POST /exercise/query API.
 
 
 ---
@@ -1654,6 +1688,22 @@ We will make a form which will receive values for each field on the ```exercise`
 ```
 
 Once we've built a working form for each value, we'll add a feature for "pack" to make selecting a previous value easier (choose from list / new pack... UX flow) using the same networkCall we used in DoExercise to populate our pack selection component.
+
+
+
+./src/CreateExercise.js
+```js
+//...
+  state = {
+    //...
+    availablePacks: [],
+  }
+
+  componentDidMount(){
+    readPacks().then( packs=> this.setState({ availablePacks: Object.keys(packs) }) );
+  }
+```
+
 
 
 For now, since we only have one ```component```, we won't allow the user to change the value -- later we'll want a dropdown ```<select>```.
