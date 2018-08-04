@@ -40,6 +40,7 @@ Agenda:
     - separating our network calls from our component logic
     - toggling between network targets
   - step4: build a view level component to CREATE / EDIT exercises
+    - add pack to result CREATE call with server schema update
     - build from server step2 CREATE w pack and tags
     - add query by feature to DoExercise view
     - build from server step3 EDIT exercise feature
@@ -1090,10 +1091,12 @@ building the server is in [the ulpan-server companion course](https://github.com
 - if you aren't: clone the repo and do ```git checkout step1```
   - instructions are provided in ulpan-server's README for syncing up with this course
 
-then run
-
 ```
 $ cd ~/code/ulpan-server
+
+# roll back the server to the correct point in the version history
+
+$ git checkout step1
 $ npm start
 ```
 
@@ -1540,6 +1543,67 @@ if this import / export business is new to you, [take a read through anything fr
 
 
 ### step4: build a view level component to CREATE / EDIT exercises
+
+##### running the server
+
+```
+$ cd ~/code/ulpan-server
+
+# either work your way through step1's exercises, or
+# checkout the relevant point in the version history
+
+$ git checkout step2
+$ npm start
+```
+
+to run the server locally
+
+---
+
+
+We have some new features from the server: CREATE exercise route being available will let us build our "create exercise" view finally, first though we have a few updates to DoExercise
+
+
+#### add pack to result CREATE call with server schema update
+
+The server team now wants us to send along the ```pack``` that an exercise was in with the result. Probably later they'll want to replace this with a [foreign key](https://www.w3schools.com/sql/sql_foreignkey.asp), though for now ```pack``` will allow us to do the query we want.
+
+this will be easy enough to graft on as the result passes through the ```Dealer``` Component
+
+./src/Dealer.js
+```js
+//...
+
+  onResult = (result)=>
+    this.setState(state => ({ results: state.results.concat({
+      ...result,
+      pack: this.state.exercises[ this.state.currentExercise ].pack,
+    }) }))
+
+//...
+```
+we're using [object rest](https://babeljs.io/docs/en/babel-plugin-transform-object-rest-spread.html) to copy the old result object while grafting a new field onto it.
+
+
+we can confirm this is working by working through some exercises and:
+- checking the "POST /result" calls in the network panel
+- running a GET (READ ALL) /result or POST /result/query in POSTMAN to check output
+
+
+---
+
+#### build View from server step2 CREATE w pack and tags
+
+our main goal in this step is to build a view which will allow users to create exercises.
+
+We will make a form which will receive values for each field on the ```exercise``` schema.
+
+
+
+
+
+    - add query by feature to DoExercise view
+    - build from server step3 EDIT exercise feature
 
 
 ### step5: build a view level component to READ && render results

@@ -20,7 +20,10 @@ class Dealer extends Component {
   }
   
   onResult = (result)=>
-    this.setState(state => ({ results: state.results.concat(result) }))
+    this.setState(state => ({ results: state.results.concat({
+      ...result,
+      pack: this.state.exercises[ this.state.currentExercise ].pack,
+    }) }))
   
   render(){
     const { currentExercise } = this.state;    
