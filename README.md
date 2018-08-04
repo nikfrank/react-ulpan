@@ -43,11 +43,15 @@ Agenda:
     - add pack to result CREATE call with server schema update
     - build from server step2 CREATE w pack and tags
     - add query by feature to DoExercise view
-    - build from server step3 EDIT exercise feature
   - step5: build a view level component to READ && render results
     - build from server step2 basic charts and basic querying
     - build from server step3 deeper querying
       - add FK -> exercise on result for tags queries
+  - step6: upgrade exercise View to edit also
+    - build from server step3 EDIT exercise feature
+  - step7: many different FlashCards
+    - refactor Dealer to resolve from CardLib
+    - build another Card (++ feature challenges)
 
 - Section 2: user login and identity
   - step0: making a facebook app id
@@ -1589,6 +1593,20 @@ we can confirm this is working by working through some exercises and:
 - checking the "POST /result" calls in the network panel
 - running a GET (READ ALL) /result or POST /result/query in POSTMAN to check output
 
+---
+
+    - add query by feature to DoExercise view
+
+we can use the mock data from our server to build a component to select which lesson pack we wish to attempt (this will work just the same once we upgrade the server to work with a real database of course)
+
+
+
+...
+
+query unique { [pack]: numberOfCards } list (need to add to step1 server api)
+
+(reuse this networkCall in CreateExercise form for pack select)
+
 
 ---
 
@@ -1596,14 +1614,38 @@ we can confirm this is working by working through some exercises and:
 
 our main goal in this step is to build a view which will allow users to create exercises.
 
-We will make a form which will receive values for each field on the ```exercise``` schema.
+We will make a form which will receive values for each field on the ```exercise``` schema:
+
+```js
+  {
+    pack: 'cafe',
+    tags: ['noun', 'nosh', 'politics'],
+    prompt: 'אבטיח מחולק עם פטה בצד',
+    answer: [
+      'sliced watermelon with feta on the side',
+      'why is there feta next to my watermelon???',
+    ],
+    component: 'FlashCard',
+  },
+```
+
+Once we've built a working form for each value, we'll add a feature for "pack" to make selecting a previous value easier (choose from list / new pack... UX flow) using the same networkCall we used in DoExercise to populate our pack selection component.
+
+
+For now, since we only have one ```component```, we won't allow the user to change the value -- later we'll want a dropdown ```<select>```.
+
+
+- inputs for pack and prompt
+- array string inputs component
+  - apply component to answer, tags
+- query available packs (add this to server step1?)
+
+- add networkCall. createExercise
 
 
 
 
-
-    - add query by feature to DoExercise view
-    - build from server step3 EDIT exercise feature
+    - build from server step3 EDIT exercise feature (step 6)
 
 
 ### step5: build a view level component to READ && render results
