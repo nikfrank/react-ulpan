@@ -41,8 +41,8 @@ Agenda:
     - toggling between network targets
   - step4: build a view level component to CREATE / EDIT exercises
     - add pack to result CREATE call with server schema update
-    - build from server step2 CREATE w pack and tags
-    - add query by feature to DoExercise view
+    - add select by pack feature to DoExercise view
+    - build View from server step2 CREATE w pack and tags
   - step5: build a view level component to READ && render results
     - build from server step2 basic charts and basic querying
     - build from server step3 deeper querying
@@ -1595,17 +1595,41 @@ we can confirm this is working by working through some exercises and:
 
 ---
 
-    - add query by feature to DoExercise view
+#### add select by pack feature to DoExercise view
 
 we can use the mock data from our server to build a component to select which lesson pack we wish to attempt (this will work just the same once we upgrade the server to work with a real database of course)
 
 
+let's read from the GET /exercise/packs convenience API we just got from the server team.
 
-...
+./src/networkCalls.js
+```js
+//...
 
-query unique { [pack]: numberOfCards } list (need to add to step1 server api)
+const packsMock = exerciseMock.reduce( (prev, pack)=> ({
+  ...prev, [pack]: (prev[pack]||0)+1
+}), {});
 
-(reuse this networkCall in CreateExercise form for pack select)
+//... in fake:
+    readPacks: ()=> Promise.resolve( packsMock ),
+
+//... in server:
+    readPacks: ()=> fetch(apiDomain+'/exercise/packs').then(res => res.json()),
+
+//...
+```
+
+maintaining our fake: and server: calls is a habit we should never give up on!
+
+we'll reuse this networkCall in CreateExercise form for pack select.
+
+
+Now that we can read the { [pack]: SIZE,.. } response, let's load that in our ```componentDidMount``` on ```DoExercise``` to populate a list for the user to select from
+
+
+
+
+(( perhaps later we'll also get the tags with this API ))
 
 
 ---
