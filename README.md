@@ -1724,6 +1724,40 @@ import { queryExercises, readPacks, createResult } from './networkCalls';
 
 also here, once the user is finished a pack, we are resetting ```state.exercises``` to an empty array.
 
+note that the onClick for each li uses a pattern we haven't seen yet: baking a value into a function call
+
+
+##### baking a value into a function call
+
+often in a list of elements in JSX, we'll want an onClick which responds based on which item in the list we've selected.
+
+if we call the eventHandler function normally, we have no way of knowing which li was called
+
+```js
+//...
+
+  saveItem = (e)=> console.log(e); // no id or key anywhere!
+
+//... items.map( item=> (
+     <li key={item.key} onClick={this.saveItem}> {item.displayText} </li>
+
+//... ) )
+```
+
+so we need to wrap the ```this.saveItem``` call with a fat-arrow function which will bake the value into the call:
+
+```js
+     <li key={item.key} onClick={()=> this.saveItem(item)}> {item.displayText} </li>
+```
+
+now our call to ```this.saveItem``` will always get the item the user clicked on.
+
+
+(we can also add an id prop to the li and read from event.target.id, as seen in workbook-3)
+
+
+---
+
 
 (( CSS, refactor into component <PackList packs onSelect/> ))
 
