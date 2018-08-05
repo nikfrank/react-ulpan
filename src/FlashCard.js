@@ -12,6 +12,8 @@ class FlashCard extends Component {
 
   setGuess = ({ target: { value } })=> this.setState({ guess: value })
 
+  enterCheck = e=> (e.key === 'Enter') && this.check()
+  
   check = ()=> {
     const scores =
       this.props.answer.map( answer =>
@@ -41,7 +43,8 @@ class FlashCard extends Component {
           {prompt}
         </div>
         <div className='prompt'>
-          <input value={guess} onChange={this.setGuess} />
+          <input value={guess} onChange={this.setGuess} autoFocus
+                 onKeyPress={this.enterCheck}/>
           <button onClick={this.check}>Check</button>
           {
             result === 1 ? (

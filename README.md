@@ -1770,6 +1770,7 @@ Our UI-UX design team is complaining about how our exercise flow works:
 - FlashCard has unstyled ```<input/>``` and ```<button/>```s
   - let's make those fit more smoothly into the handwritten style (no outlines)
 - the user can't submit their guess by hitting "enter"
+- the response is ugly (text like hmmm... should be a color)
 - the user can submit multiple times on the same FlashCard
   - after submitting, the FlashCard should enter a "done" state
   - in the "done" state when the user hits "enter" again, we should call ```this.next```
@@ -1872,7 +1873,17 @@ that should make them happy!
 
 ##### FlashCard has unstyled ```<input/>``` and ```<button/>```s
 
-(( css ))
+./src/FlashCard.css
+```css
+(( ... styling input, font, Enter key => check ))
+
+```
+
+(( ... change button from check to next after test ))
+
+(( get rid of hmm, replace with color / icon ))
+
+
 
 
 ---

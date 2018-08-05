@@ -3,14 +3,17 @@
   max-width: 80vw;
   margin: 10px auto;
 
-  border: 1px solid rgba( 100, 100, 100, 0.25);
+  border: 1px solid rgba( 100, 100, 100, 0.25 );
 
   background-position: 0 25px;
   background-size: 100px 30px;
   background-image:
-    linear-gradient( to bottom, rgba(50, 200, 200, 0.5) 1px, transparent 1px);
+    linear-gradient( to bottom, rgba(50, 200, 200, 0.5) 1px, transparent 1px );
   
   position: relative;
+
+  padding-top: 30px;
+  font-size: 23px;
 }
 
 .flashcard::after {
@@ -24,5 +27,33 @@
 }
 
 .flashcard .prompt {
-  margin-top: 85px;
+  position: absolute;
+  top: 176px;
+  left: 16%;
+  width: 68%;
+  height: 27px;
+}
+
+.flashcard .prompt input {
+  height: 100%;
+  width: 100%;
+  padding: 0 0 0 2px;
+  caret-color: orange;
+  border: none;
+  font-size: 20px;
+  border: 1px solid rgba( 255, 178, 100, 0.5 );
+}
+
+.flashcard .prompt button {
+  position: absolute;
+  bottom: -1px;
+  right: -3px;
+  line-height: 21px;
+  
+  background-color: white;
+  border-radius: 3px;
+}
+
+.flashcard .prompt input:focus + button {
+  border-color: rgba( 255, 178, 100, 0.5 );
 }
