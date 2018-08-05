@@ -36,10 +36,10 @@ class DoExercise extends Component {
         </header>
         <div>
           {!exercises.length ? !packs.length ? null : (
-             <ul>
+             <ul className='pack-list'>
                {packs.map( pack=> (
                   <li key={pack.name} onClick={()=> this.setPack(pack.name)}>
-                    {pack.name} - {pack.size}
+                    <p>{pack.name} - {pack.size} exercise{pack.size > 1 ? 's':''}</p>
                   </li>
                 ) )}
              </ul>

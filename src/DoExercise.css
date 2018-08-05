@@ -16,3 +16,39 @@
 .DoExercise-intro {
   font-size: large;
 }
+
+.pack-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  padding: 0;
+}
+
+.pack-list li {
+  display: block;
+  width: 49%;
+
+  margin: 3px auto;
+  
+  min-width: 350px;
+  min-height: 80px;
+  border: 2px outset #eee;
+
+  line-height: 80px;
+
+  cursor: pointer;
+}
+
+.pack-list li:active {
+  border: 2px inset #eee; 
+}
+
+.pack-list li:hover {
+  background-color: rgba(50, 200, 200, 0.5);
+}
+
+.pack-list li p {
+  text-decoration: underline;
+  text-decoration-color: rgba(50, 200, 200, 0.5);
+}

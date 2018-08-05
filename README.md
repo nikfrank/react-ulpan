@@ -1662,7 +1662,7 @@ Now that we can read the { [pack]: SIZE,.. } response, let's load that in our ``
 //...
 ```
 
-(( perhaps later we'll also get the tags with this API ))
+( perhaps later we'll also get the tags with this API )
 
 
 Now the users will want to click on a pack and have those exercises load
@@ -1762,8 +1762,121 @@ now our call to ```this.saveItem``` will always get the item the user clicked on
 
 ---
 
+#### Style and usability
 
-(( CSS, refactor into component <PackList packs onSelect/> ))
+Our UI-UX design team is complaining about how our exercise flow works:
+
+- pack selection list is ugly
+- FlashCard has unstyled ```<input/>``` and ```<button/>```s
+  - let's make those fit more smoothly into the handwritten style (no outlines)
+- the user can't submit their guess by hitting "enter"
+- the user can submit multiple times on the same FlashCard
+  - after submitting, the FlashCard should enter a "done" state
+  - in the "done" state when the user hits "enter" again, we should call ```this.next```
+- when the Dealer has run out of cards and received results, display them briefly
+- now that we have a menu, we can get rid of the "start" button in ```Dealer```
+
+(( write this CSS, function bindings ))
+
+
+##### pack selection list
+
+let's use [flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) to make our list items into big rectangles which organize well when the pages resizes
+
+first let's apply a className to the pack ```<ul/>```
+
+./src/DoExercise.js
+```js
+//...
+             <ul className='pack-list'>
+//...
+```
+
+now for flexbox, we need to declare the container (the ul) to be ```display: flex```
+
+./src/DoExercise.css
+```css
+.pack-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  padding: 0;
+}
+```
+
+also we've decided the direction (row as opposed to column), and to wrap (as opposed to fitting everything into one row)
+
+```padding: 0;``` will remove the browser default padding for ```<ul/>``` elements
+
+
+
+now let's style the list items to be blocks taking up a comfortable size
+
+./src/FlashCard.css
+```css
+//...
+
+.pack-list li {
+  display: block;
+  width: 49%;
+
+  margin: 3px auto;
+  
+  min-width: 350px;
+  min-height: 80px;
+  border: 2px outset #eee;
+
+  line-height: 80px;
+
+  cursor: pointer;
+}
+```
+
+now let's add some user event reaction colors
+
+./src/FlashCard.css
+```css
+//...
+
+.pack-list li:active {
+  border: 2px inset #eee; 
+}
+
+.pack-list li:hover {
+  background-color: rgba(50, 200, 200, 0.5);
+}
+
+.pack-list li p {
+  text-decoration: underline;
+  text-decoration-color: rgba(50, 200, 200, 0.5);
+}
+```
+
+and just for fun, let's put some number-sensitive text on the list items
+
+./src/FlashCard.js
+```js
+//...
+               {packs.map( pack=> (
+                  <li key={pack.name} onClick={()=> this.setPack(pack.name)}>
+                    <p>{pack.name} - {pack.size} exercise{pack.size > 1 ? 's':''}</p>
+                  </li>
+                ) )}
+//...
+```
+
+that should make them happy!
+
+
+
+##### FlashCard has unstyled ```<input/>``` and ```<button/>```s
+
+(( css ))
+
+
+---
+
 
 
 now that we've upgaded ```DoExercise``` to all the latest features available from the server, we can move ahead to the ```CreateExercise``` View (finally)
@@ -2013,6 +2126,9 @@ Let's build a simple list of ```<Link/>```s into our ./src/Routes.js Navigation.
 
 
 (( CSS and UX intermezzo ))
+
+
+(( simple deployment task ))
 
 
 
