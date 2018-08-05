@@ -53,6 +53,7 @@ Agenda:
     - refactor Dealer to resolve from CardLib
     - build another Card (++ feature challenges)
 
+
 - Section 2: user login and identity
   - step0: making a facebook app id
   - step1: integrating facebook login to our app
@@ -62,8 +63,10 @@ Agenda:
   - step3: querying exercise groups (lessons) by user
   - step4: full integration of front end and server
 
+
 - Section 3: deploying a full stack app on heroku with postgres
   - bonus discussion of deployment on AWS / azure cloud runtimes
+
 
 - Section 4: testing front end components
   - behaviour testing
@@ -71,6 +74,7 @@ Agenda:
   - network integration testing
 
 
+  - handling connectivity errors, offline mode
 
 ---
 
@@ -1805,8 +1809,6 @@ Once we've built a working form, we'll add a feature for "pack" to make selectin
 ```
 
 
-(( refactor packs list into nice component in previous step ))
-
 
 
 For now, since we only have one ```component```, we won't allow the user to change the value -- later we'll want a dropdown ```<select>```.
@@ -1818,6 +1820,23 @@ For now, since we only have one ```component```, we won't allow the user to chan
 - query available packs (add this to server step1?)
 
 - add networkCall. createExercise
+
+
+
+##### navigation
+
+so far, the only way to get to our ```CreateExercise``` View is by magically knowing the url path (/create)
+
+Normally, we'd expect there to be user accessible navigation!
+
+Let's build a simple list of ```<Link/>```s into our ./src/Routes.js Navigation...
+
+
+(( Navigation component ))
+
+(( refactor header out of DoExercise ))
+
+
 
 
 
