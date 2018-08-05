@@ -1794,6 +1794,189 @@ We will make a form to put in values for each field on the ```exercise``` schema
 Once we've built a working form, we'll add a feature for "pack" to make selecting a previous value easier (choose from list / new pack... UX flow) using the same networkCall we used in DoExercise to populate our pack selection component.
 
 
+- inputs for pack and prompt
+- array string inputs component
+  - apply component to answer, tags
+- query available packs (add this to server step1?)
+
+- add networkCall. createExercise
+
+
+
+let's start by making our fields (empty) on our ```state``` and applying simple input boxes for ```pack``` and ```prompt```
+
+
+./src/CreateExercise.js
+```js
+//...
+  state = {
+    pack: '',
+    prompt: '',
+    answer: [],
+    tags: [],
+    component: 'FlashCard',
+  }
+
+  setPack = e=> this.setState({ pack: e.target.value })
+  setPrompt = e=> this.setState({ prompt: e.target.value })
+  
+  render() {
+    const { pack, prompt, answer, tags, component } = this.state;
+    
+    return (
+      <div className='CreateExercise'>
+        <label>Pack <input value={pack} onChange={this.setPack}/></label>
+        <label>Prompt <input value={prompt} onChange={this.setPrompt}/></label>
+      </div>
+    );
+  }
+//...
+```
+
+now what we'll we do for ```answer``` and ```tags``` which take arrays?
+
+we'll need to make a custom input Component which has a + button and an X button
+
+this is a common pattern in forms, and is not so complicated in React
+
+```$ touch ./src/StringListInput.js```
+
+
+(( split this into chunks ))
+
+./src/StringListInput.js
+```js
+import React, { Component } from 'react';
+
+class StringListInput extends Component {
+
+  setValue = e=> {
+    const id = 1 * e.target.id;
+
+    this.props.onChange(
+      this.props.value.map( (item, index)=> index === id ? e.target.value : item )
+    );
+  }
+
+  addItem = ()=> this.props.onChange( this.props.value.concat('') )
+
+  removeItem = e=> this.props.onChange(
+    this.props.value.slice(0, 1 * e.target.id ).concat(
+      this.props.value.slice( 1 * e.target.id + 1)
+    ) )
+  
+  render(){
+    const { value=[], onChange=(()=>0) } = this.props;
+    
+    return (
+      <div className='StringListInput'>
+        <ul>
+          {value.map( (item, index)=> (
+             <li key={index}>
+               <input id={index} value={item} onChange={this.setValue}/>
+               <button onClick={this.removeItem} id={index}>X</button>
+             </li>
+           ) )}
+        </ul>
+        <button onClick={this.addItem}>+</button>
+      </div>
+    );
+  }
+};
+
+export default StringListInput;
+```
+
+
+
+now we can use ```<StringListInput value={arrayOfStrings} onChange={newArray=> ...}/>``` in our form
+
+
+./src/CreateExercise.js
+```js
+//...
+import StringListInput from './StringListInput';
+
+//...
+
+  setAnswer = answer=> this.setState({ answer })
+  setTags = tags=> this.setState({ tags })
+
+//...
+
+        <label>Answer <StringListInput value={answer} onChange={this.setAnswer}/></label>
+        <label>Tags <StringListInput value={tags} onChange={this.setTags}/></label>
+
+//...
+```
+
+note that instead of getting a synthetic event in our ```onChange``` handlers like we did with raw html ```<input/>```s, our ```<StringListInput />``` delivers just the new array value to our handler.
+
+The reason we make ```StringListInput``` to do that is that React gains efficiency when it is able to recycle synthetic event objects ASAP. So the faster we have our references to an ```event``` [garbage collected](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_Management) the faster React will run.
+
+
+
+##### sending the new exercise to the POST /exercise API
+
+
+./src/networkMocks/exerciseResponse.js
+```js
+export default { createdId: 'fakeId' };
+```
+
+./src/networkCalls.js
+```js
+//...
+import exerciseResponseMock from './networkMocks/exerciseResponse';
+
+//... in fake:
+    createExercise: ()=> Promise.resolve( exerciseResponseMock ),
+
+
+//... in server:
+    createExercise: exercise => fetch(apiDomain+'/exercise', {
+      method: 'POST',
+      body: JSON.stringify( exercise ),
+      headers:{ 'Content-Type': 'application/json' },
+    }).then( res => res.json() ),
+    
+//...
+export const createExercise = networkCalls[target].createExercise;
+//...
+```
+
+
+./src/CreateExercise.js
+```js
+//...
+import { readPacks, createExercise } from './networkCalls';
+
+//... TODO: notify user of success
+
+  create = ()=> createExercise({ ...this.state, availablePacks: undefined })
+    .then( response => {
+      console.log(response, 'created; resetting form');
+      this.setState({
+        pack: '',
+        prompt: '',
+        answer: [],
+        component: 'FlashCard',
+        tags: [],
+      });
+    });
+
+//...
+
+        <button onClick={this.create}>Create!</button>
+
+```
+
+
+For now, since we only have one ```component```, we won't allow the user to change the value -- later we'll want a dropdown ```<select>```.
+
+
+
+##### selecting pack for convenience
 
 ./src/CreateExercise.js
 ```js
@@ -1809,17 +1992,6 @@ Once we've built a working form, we'll add a feature for "pack" to make selectin
 ```
 
 
-
-
-For now, since we only have one ```component```, we won't allow the user to change the value -- later we'll want a dropdown ```<select>```.
-
-
-- inputs for pack and prompt
-- array string inputs component
-  - apply component to answer, tags
-- query available packs (add this to server step1?)
-
-- add networkCall. createExercise
 
 
 
@@ -1838,6 +2010,9 @@ Let's build a simple list of ```<Link/>```s into our ./src/Routes.js Navigation.
 
 
 
+
+
+(( CSS and UX intermezzo ))
 
 
 

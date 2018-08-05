@@ -2,6 +2,7 @@ import { apiDomain, target } from './networkConfig';
 
 import exerciseMock from './networkMocks/exercise';
 import resultResponseMock from './networkMocks/resultResponse';
+import exerciseResponseMock from './networkMocks/exerciseResponse';
 
 const packsMock = exerciseMock.reduce( (prev, pack)=> ({
   ...prev, [pack]: (prev[pack]||0)+1
@@ -13,6 +14,8 @@ const networkCalls = {
   fake: {
     readExercises: ()=> Promise.resolve( exerciseMock ),
     queryExercises: ()=> Promise.resolve( queryExercisesMock ),
+    createExercise: ()=> Promise.resolve( exerciseResponseMock ),
+      
     readPacks: ()=> Promise.resolve( packsMock ),
     createResult: ()=> Promise.resolve( resultResponseMock ),
   },
@@ -22,6 +25,12 @@ const networkCalls = {
     queryExercises: query=> fetch(apiDomain+'/exercise/query', {
       method: 'POST',
       body: JSON.stringify( query ),
+      headers:{ 'Content-Type': 'application/json' },
+    }).then( res => res.json() ),
+
+    createExercise: exercise => fetch(apiDomain+'/exercise', {
+      method: 'POST',
+      body: JSON.stringify( exercise ),
       headers:{ 'Content-Type': 'application/json' },
     }).then( res => res.json() ),
     
@@ -37,5 +46,6 @@ const networkCalls = {
 
 export const readExercises = networkCalls[target].readExercises;
 export const queryExercises = networkCalls[target].queryExercises;
+export const createExercise = networkCalls[target].createExercise;
 export const readPacks = networkCalls[target].readPacks;
 export const createResult = networkCalls[target].createResult;

@@ -2,3 +2,6 @@
   text-align: center;
 }
 
+.CreateExercise label {
+  display: block;
+}
