@@ -2150,4 +2150,41 @@ Let's build a simple list of ```<Link/>```s into our ./src/Routes.js Navigation.
 
 
 
+
+
+## Section 3: deploying a full stack app on heroku with postgres
+
+
+let's build our app, and push it to heroku, then our server
+
+once we have the front end served from ```https://our-app-name.herokuapp.com```, we will no longer be able to point to ```localhost:4000``` for our service!
+
+we will also have to push the server to run on heroku, and when the front end is running on heroku - it will have to know to point to the correct server domain.
+
+
+#### environment dependent configuration
+
+we will use our location.origin to point our production app at our production server
+
+./src/networkConfig.js
+```js
+export const apiDomain =
+  (((window||{}).location||{}).origin||'').indexOf('localhost') > -1 ?
+  'http://localhost:4000':
+  'https://ulpan-server.herokuapp.com';
+
+//...
+```
+
+now that I've taken ulpan-server you'll have to pick a different name eh!
+
+
+#### building the front end with a static server
+
+
+
+
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
