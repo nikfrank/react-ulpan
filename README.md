@@ -2181,6 +2181,12 @@ now that I've taken ulpan-server you'll have to pick a different name eh!
 
 #### building the front end with a static server
 
+```$ yarn add pushstate-server```
+
+[pushstate-server](https://npmjs.org/package/pushstate-server) is a reliable static asset server (we will build our dynamically linked React app into a static js asset = artifact) available at much convenience on npm.
+
+
+then make a Procfile and add a server script to our package.json
 
 
 
