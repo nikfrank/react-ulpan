@@ -31,9 +31,6 @@ class DoExercise extends Component {
     
     return (
       <div className='DoExercise'>
-        <header className='DoExercise-header'>
-          <h1 className='DoExercise-title'>Learn Hebrew!</h1>
-        </header>
         <div>
           {!exercises.length ? !packs.length ? null : (
              <ul className='pack-list'>
